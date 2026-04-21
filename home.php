@@ -1,0 +1,121 @@
+<?php
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Proiect Accidente</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1 id="title-principal">Proiect accidente</h1>
+        <div id="header-options">
+            <a href="home.php" class="header-option">Home</a>
+            <a href="" class="header-option">Download Page</a>
+            <a href="" class="header-option">Map</a>
+            <a href="" class="header-option">Upload Page</a>
+            <a href="" class="header-option">About</a>
+        </div>
+        <hr>
+    </header>
+
+    <main>
+        <form id="form-filtre">
+            <div>
+                <label for="sdate">Starting date:</label>
+                <input type="date" id="sdate" name="sdate">
+            </div>
+            <br>
+            <div>
+                <label for="fdate">Final date:</label>
+                <input type="date" id="fdate" name="fdate">
+            </div>
+            <br>
+            <div>
+                <label for="severitate">Severitate:</label>
+                <select id="severitate" name="severitate">
+                    <option value="ALL">All</option>
+                    <option value="1">1 - Small</option>
+                    <option value="2">2 - Moderate</option>
+                    <option value="3">3 - Severe</option>
+                    <option value="4">4 - Extremely Severe</option>
+                </select>
+            </div>
+            <br>
+            <div>
+                <label for="region">Select location:</label>
+                <select id="region" name="region">
+                    <option value="ALL">All regions</option>
+                    <option value="NE">North-East</option>
+                    <option value="NW">North-West</option>
+                    <option value="SE">South-East</option>
+                    <option value="SW">South-West</option>
+                </select>
+            </div>
+            <br>
+            <label for="criteriu_grupare">Imparte graficul dupa:</label>
+            <select id="criteriu_grupare" name="criteriu_grupare" required>
+                <option value="severitate">Severitate (1, 2, 3, 4)</option>
+                <option value="an">An</option>
+                <option value="luna">Luna</option>
+                <option value="ziua">Ziua din saptamana</option>
+                <option value="location">Locatie (NE, NW, SE, SW)</option>
+            </select>
+            <div>
+                <button type="submit" id="btn-submit">Submit Data</button>
+                <button type="button" id="btn-pie" disabled>Pie Chart</button>
+                <button type="button" id="btn-bar" disabled>Bar Chart</button>
+                <button type="button" id="btn-line" disabled>Line Chart</button>
+                <input type="reset">
+            </div>
+        </form>
+        <div style="flex-grow: 1; max-width: 600px; padding-left: 20px;">
+            <canvas id="graficRezultate"></canvas>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        let grafic = null;
+        let date = null;
+        document.getElementById('form-filtre').addEventListener('submit', function(event){
+            event.preventDefault();
+            const query = new URLSearchParams(new FormData(this)).toString();
+            fetch('api_statistici.php?' + query)
+                .then(response => response.json())
+                .then(dateDinBaza => {
+                    date = dateDinBaza;
+                    document.getElementById('btn-pie').disabled = false;
+                    document.getElementById('btn-bar').disabled = false;
+                    document.getElementById('btn-line').disabled = false;
+                    alert("Datele au fost preluate");
+                });
+        });
+        function deseneazaGrafic(tip){
+            if(!date){
+                return;
+            }
+            const etichete = date.map(rand => rand.eticheta);
+            const valori = date.map(rand => rand.total);
+            if(grafic){
+                grafic.destroy();
+            }
+            const ctx = document.getElementById('graficRezultate').getContext('2d');
+            grafic = new Chart(ctx, {
+                type: tip,
+                data: {
+                    labels: etichete,
+                    datasets: [{
+                        label: 'Numar Accidente',
+                        data: valori,
+                        backgroundColor: ['#ffcd56', '#ff6384', '#36a2eb', '#fd6b19', '#4bc0c0']
+                    }]
+                }
+            });
+        }
+        document.getElementById('btn-pie').addEventListener('click', function() { deseneazaGrafic('pie'); });
+        document.getElementById('btn-bar').addEventListener('click', function() { deseneazaGrafic('bar'); });
+        document.getElementById('btn-line').addEventListener('click', function() { deseneazaGrafic('line'); });
+    </script>
+</body>
+</html>

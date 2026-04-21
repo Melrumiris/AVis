@@ -1,0 +1,8 @@
+#title-principal{
+    display: flex;
+    justify-content: center;
+}
+#header-options{
+    display: flex;
+    justify-content: space-around;
+}
