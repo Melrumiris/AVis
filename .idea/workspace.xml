@@ -1,7 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="c03743e6-ae3b-47d9-bc8c-4fa693b26831" name="Changes" comment="" />
+    <list default="true" id="c03743e6-ae3b-47d9-bc8c-4fa693b26831" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/public/.htaccess" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/index.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/route/(admin)/dashboard.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/route/(admin)/index.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/route/(auth)/index.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/route/(auth)/login.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/route/(auth)/register.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/route/(main)/home.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/route/(main)/index.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/route/(public)/about.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/route/(public)/index.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/route/index.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/Navbar.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sections/admin/screens/DashboardScreen.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sections/auth/screens/LoginScreen.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sections/auth/screens/RegisterScreen.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sections/home/screens/HomeScreen.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sections/meta/screens/401Screen.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sections/meta/screens/404Screen.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sections/public/screens/AboutScreen.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sections/settings/screens/ProfileScreen.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/sections/settings/screens/SettingsScreen.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/utils/authAPI.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api_statistici.php" beforeDir="false" afterPath="$PROJECT_DIR$/unorganized/api_statistici.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/unorganized/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/unorganized/style.css" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -10,13 +42,38 @@
   <component name="ComposerSettings">
     <execution />
   </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_/home/melrumiris/PhpstormProjects/AVis" value="3D1iAuk4Q05hRzeWGSmdjonbyiY" />
+    </persistenceIdMap>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="PHP File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Melrumiris&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Melrumiris/AVis.git&quot;,
+    &quot;accountId&quot;: &quot;058a12d9-324d-49c7-8be5-69757535f2b2&quot;
+  }
+}</component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
   </component>
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="/usr/bin/php" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2,
   &quot;fromUser&quot;: false
@@ -26,30 +83,42 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/dragos/PhpstormProjects/AVis&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/dragos/PhpstormProjects/AVis",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/sections/home/screens" />
+      <recent name="$PROJECT_DIR$/src/sections/auth/screens" />
+      <recent name="$PROJECT_DIR$/src/sections/meta/screens" />
+      <recent name="$PROJECT_DIR$/public/assets" />
+      <recent name="$PROJECT_DIR$/public" />
     </key>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-3bd3a6803838-JavaScript-PS-261.22158.283" />
-        <option value="bundled-php-predefined-a98d8de5180a-a9a4ea3ee0f4-com.jetbrains.php.sharedIndexes-PS-261.22158.283" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-PS-261.23567.149" />
+        <option value="bundled-php-predefined-a98d8de5180a-022fa7b8ab75-com.jetbrains.php.sharedIndexes-PS-261.23567.149" />
       </set>
     </attachedChunks>
   </component>
@@ -64,10 +133,19 @@
       <workItem from="1776767271207" duration="21000" />
       <workItem from="1776767301157" duration="8000" />
       <workItem from="1776767316293" duration="17000" />
+      <workItem from="1777465208699" duration="12435000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>
