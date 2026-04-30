@@ -87,10 +87,15 @@
             }
         });
     }
+    function getBasePath(){
+        const PathArray = window.location.pathname.split('/');
+        return '/' + PathArray[1] + '/' + PathArray[2];
+    }
     document.getElementById('form-filtre').addEventListener('submit', function(event){
         event.preventDefault();
         const query = new URLSearchParams(new FormData(this)).toString();
-        fetch('/projectWEB/public/api/statistici?' + query)
+        const basePath = getBasePath();
+        fetch(basePath + '/api/statistici?' + query)
             .then(response => response.json())
             .then(dateDinBaza => {
                 date = dateDinBaza;
