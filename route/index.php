@@ -26,6 +26,10 @@ switch ($request) {
     //Main
     case '/home':
         require ROOT . '/route/(main)/index.php'; break;
+    //API Routes
+    case '/api/statistici':
+        require ROOT . '/src/utils/api_statistici.php';
+        exit;
     //Admin
     case '/dashboard':
         require ROOT . '/route/(admin)/index.php'; break;
