@@ -30,9 +30,15 @@ switch ($request) {
     case '/api/statistici':
         require ROOT . '/src/utils/api_statistici.php';
         exit;
+    case '/api/map':
+        require ROOT . '/src/utils/api_map.php';
+        exit;
     //Admin
     case '/dashboard':
         require ROOT . '/route/(admin)/index.php'; break;
+    //Map
+    case '/map':
+        require ROOT . '/route/(public)/MapScreen.php'; break;
     //404
     default:
         http_response_code(404);

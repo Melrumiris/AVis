@@ -4,8 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c03743e6-ae3b-47d9-bc8c-4fa693b26831" name="Changes" comment="organised the unorganised files">
-      <change beforePath="$PROJECT_DIR$/src/sections/home/screens/HomeScreen.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/sections/home/screens/HomeScreen.php" afterDir="false" />
+    <list default="true" id="c03743e6-ae3b-47d9-bc8c-4fa693b26831" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/route/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/route/index.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Navbar.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Navbar.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,8 +95,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-PS-261.23567.149" />
-        <option value="bundled-php-predefined-a98d8de5180a-022fa7b8ab75-com.jetbrains.php.sharedIndexes-PS-261.23567.149" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-PS-261.24374.185" />
+        <option value="bundled-php-predefined-a98d8de5180a-6bbb74dbab74-com.jetbrains.php.sharedIndexes-PS-261.24374.185" />
       </set>
     </attachedChunks>
   </component>
@@ -112,7 +115,10 @@
       <workItem from="1777558780755" duration="1452000" />
       <workItem from="1777560252351" duration="2387000" />
       <workItem from="1777562702524" duration="356000" />
-      <workItem from="1777563079668" duration="604000" />
+      <workItem from="1777563079668" duration="746000" />
+      <workItem from="1779427426094" duration="18000" />
+      <workItem from="1779427458213" duration="394000" />
+      <workItem from="1779549680841" duration="6000" />
     </task>
     <task id="LOCAL-00001" summary="organised the unorganised files">
       <option name="closed" value="true" />
@@ -122,7 +128,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777563388052</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="organised the unorganised files">
+      <option name="closed" value="true" />
+      <created>1777563802435</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1777563802435</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
