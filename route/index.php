@@ -33,12 +33,18 @@ switch ($request) {
     case '/api/map':
         require ROOT . '/src/utils/api_map.php';
         exit;
+    case '/api/download':
+        require ROOT . '/src/utils/api_downloads.php';
+        exit;
     //Admin
     case '/dashboard':
         require ROOT . '/route/(admin)/index.php'; break;
     //Map
     case '/map':
         require ROOT . '/route/(public)/MapScreen.php'; break;
+    //Download
+    case '/download':
+        require ROOT . '/src/sections/downloads/DownloadScreen.php'; break;
     //404
     default:
         http_response_code(404);

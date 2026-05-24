@@ -14,3 +14,63 @@
             border: 2px solid #ccc;
             border-radius: 8px;
         }
+        
+.main-download {
+    padding-top: 80px;
+}
+
+.download-box {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.btn-export {
+    padding: 10px 15px;
+    margin: 5px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.btn-afiseaza {
+    background-color: #333;
+    color: #fff;
+}
+
+.btn-csv {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-svg {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-webp {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-export:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.tabel-date {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    text-align: left;
+    display: none; 
+}
+
+.tabel-date th, .tabel-date td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.tabel-date th {
+    background-color: #f4f4f4;
+}
