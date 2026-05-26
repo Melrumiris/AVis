@@ -36,6 +36,9 @@ switch ($request) {
     case '/api/download':
         require ROOT . '/src/utils/api_downloads.php';
         exit;
+    case '/api/upload':
+        require ROOT . '/src/utils/api_upload.php'; exit;
+        exit;
     //Admin
     case '/dashboard':
         require ROOT . '/route/(admin)/index.php'; break;
@@ -45,6 +48,9 @@ switch ($request) {
     //Download
     case '/download':
         require ROOT . '/src/sections/downloads/DownloadScreen.php'; break;
+    //Upload
+    case '/upload':
+        require ROOT . '/src/sections/uploads/UploadScreen.php'; break;
     //404
     default:
         http_response_code(404);

@@ -5,7 +5,7 @@
             <a href="/projectWEB/public/home" class="header-option">Home</a>
             <a href="/projectWEB/public/download" class="header-option">Download Page</a>
             <a href="/projectWEB/public/map" class="header-option">Map</a>
-            <a href="" class="header-option">Upload Page</a>
+            <a href="/projectWEB/public/upload" class="header-option">Upload Page</a>
             <a href="" class="header-option">About</a>
         </div>
         <hr>
