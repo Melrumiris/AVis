@@ -3,7 +3,7 @@
         <head>
             <meta charset="UTF-8">
             <title>Proiect Accidente</title>
-            <link rel="stylesheet" href="style.css">
+            <link rel="stylesheet" href="/projectWEB/public/style.css">
         </head>
         <body>
         <?php require ROOT . '/src/components/Navbar.php'; ?>
@@ -95,7 +95,7 @@
         event.preventDefault();
         const query = new URLSearchParams(new FormData(this)).toString();
         const basePath = getBasePath();
-        fetch(basePath + '/api/statistici?' + query)
+        fetch('/projectWEB/public/api/statistici?' + query)
             .then(response => response.json())
             .then(dateDinBaza => {
                 date = dateDinBaza;
