@@ -1,7 +1,5 @@
 <?php
 
-namespace src\Core;
-
 require_once ROOT . '/src/Core/JWT.php';
 require_once ROOT . '/src/Core/JwtType.php';
 
@@ -14,7 +12,8 @@ class JwtAuth
 
     public function __construct()
     {
-        extract((require ROOT . '/config.php')['JWT']);
+        $config = (require ROOT . '/config.php')['JWT'];
+        extract($config);
         $this->key = $secretKey;
         $this->accessExpiry = $accessExpiry;
         $this->refreshExpiry = $refreshExpiry;

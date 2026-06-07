@@ -1,7 +1,5 @@
 <?php
 
-namespace src\Responders;
-
 use JetBrains\PhpStorm\NoReturn;
 
 class JsonResponder

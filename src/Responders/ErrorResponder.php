@@ -1,8 +1,5 @@
 <?php
 
-
-namespace src\Responders;
-
 use JetBrains\PhpStorm\NoReturn;
 
 class ErrorResponder
@@ -12,7 +9,7 @@ class ErrorResponder
     {
         header('Content-Type: text/html', true, $errorCode);
         $pageTemplate = ROOT . '/views/pages/error.php';
-        require ROOT . '/views/layouts/plain.php';
+        require ROOT . '/views/layouts/auth.php';
         exit;
     }
 }

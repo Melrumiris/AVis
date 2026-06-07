@@ -1,0 +1,275 @@
+#title-principal{
+    display: flex;
+    justify-content: center;
+}
+#header-options{
+    display: flex;
+    justify-content: space-around;
+}
+#harta-container {
+            height: 600px; 
+            width: 90%; 
+            max-width: 1200px; 
+            margin: 30px auto; 
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+
+nav ul{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+
+.http-error{
+    color: darkslategray;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+        
+.main-download {
+    padding-top: 80px;
+}
+
+.download-box {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.btn-export {
+    padding: 10px 15px;
+    margin: 5px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.btn-afiseaza {
+    background-color: #333;
+    color: #fff;
+}
+
+.btn-csv {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-svg {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-webp {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-export:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.tabel-date {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    text-align: left;
+    display: none; 
+}
+
+.tabel-date th, .tabel-date td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.tabel-date th {
+    background-color: #f4f4f4;
+}
+
+.upload-container { 
+    display: flex; 
+    justify-content: center; 
+    gap: 40px; 
+    margin-top: 40px; 
+    flex-wrap: wrap;
+}
+
+.upload-box { 
+    background: #ffffff;
+    border: 1px solid #eaeaea; 
+    padding: 30px; 
+    border-radius: 12px; 
+    width: 320px; 
+    text-align: center; 
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.upload-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+}
+
+.upload-box h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #222;
+}
+
+.upload-box input, 
+.upload-box select { 
+    width: 100%; 
+    box-sizing: border-box;
+    margin-bottom: 15px; 
+    padding: 12px; 
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #fcfcfc;
+    transition: border-color 0.3s ease;
+}
+
+.upload-box input:focus, 
+.upload-box select:focus {
+    border-color: #007bff;
+    outline: none;
+    background-color: #fff;
+}
+
+.btn-submit { 
+    background: #333; 
+    color: #fff; 
+    padding: 12px 15px; 
+    border: none; 
+    border-radius: 6px;
+    cursor: pointer; 
+    width: 100%; 
+    font-weight: bold;
+    font-size: 15px;
+    transition: background 0.3s ease;
+}
+
+.btn-submit:hover {
+    background: #555;
+}
+
+.btn-submit-csv {
+    background: #28a745;
+}
+
+.btn-submit-csv:hover {
+    background: #218838;
+}
+
+/* Main container to place form and chart side-by-side */
+main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#form-filtre {
+    background: #ffffff;
+    border: 1px solid #eaeaea;
+    padding: 30px;
+    border-radius: 12px;
+    width: 320px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+#form-filtre div {
+    margin-bottom: 15px;
+}
+
+#form-filtre label {
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+#form-filtre input[type="date"],
+#form-filtre select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #fcfcfc;
+    transition: border-color 0.3s ease;
+}
+
+#form-filtre input:focus,
+#form-filtre select:focus {
+    border-color: #007bff;
+    outline: none;
+    background-color: #fff;
+}
+
+#form-filtre button,
+#form-filtre input[type="reset"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background 0.3s ease, transform 0.1s ease;
+}
+
+#form-filtre button:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+#btn-submit { background-color: #333; color: white; }
+#btn-submit:hover { background-color: #555; }
+
+#btn-pie { background-color: #ffcd56; color: #333; }
+#btn-bar { background-color: #36a2eb; color: white; }
+#btn-line { background-color: #ff6384; color: white; }
+
+#form-filtre input[type="reset"] {
+    background-color: #f4f4f4;
+    color: #333;
+    border: 1px solid #ddd;
+}
+#form-filtre input[type="reset"]:hover {
+    background-color: #e0e0e0;
+}
+
+#form-filtre button:disabled {
+    background-color: #e0e0e0;
+    color: #999;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Chart Container Wrapper */
+main > div[style] {
+    background: #ffffff;
+    border: 1px solid #eaeaea;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    /* Overriding inline styles cleanly to center the chart */
+    flex-grow: 1 !important;
+    max-width: 700px !important;
+    padding-left: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

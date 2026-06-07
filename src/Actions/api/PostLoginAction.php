@@ -1,13 +1,5 @@
 <?php
 
-namespace src\Actions\api;
-
-use src\Actions\Action;
-use src\Core\JwtAuth;
-use src\Core\JwtType;
-use src\Domain\UserDomain;
-use src\Responders\JsonResponder;
-
 require_once ROOT . '/src/Domain/UserDomain.php';
 require_once ROOT . '/src/Core/JwtAuth.php';
 require_once ROOT . '/src/Responders/HtmlResponder.php';
@@ -28,7 +20,10 @@ class PostLoginAction implements Action
             ], 404);
 
         $jsonInput = file_get_contents('php://input');
-        extract(json_decode($jsonInput, true));
+        $input = json_decode($jsonInput, true);
+
+        $username = $input['username'] ?? null;
+        $password = $input['password'] ?? null;
 
         if (empty($username) || empty($password))
             $responder->send([
@@ -43,14 +38,22 @@ class PostLoginAction implements Action
             if ($result) {
                 $auth = new JwtAuth();
                 $token = $auth->generate($result, 'user', JwtType::Refresh);
+
+                $isSecure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on';
+
                 setcookie('token', $token->toString(), [
+                    'expires' => $auth->getRefreshExpiration(),
+                    'path' => '/',
+                    'domain' => '',
+                    'secure' => $isSecure,
                     'httponly' => true,
                     'samesite' => 'Strict',
-                    'secure' => true,
-                    'expires' => $auth->getRefreshExpiration(),
                 ]);
+
+                $accessToken = $auth->generate($result, 'user', JwtType::Access);
+
                 $data = [
-                    'token' => $token->toString(),
+                    'token' => $accessToken->toString(),
                 ];
 
                 $responder->send([
@@ -69,7 +72,7 @@ class PostLoginAction implements Action
         ) {
             $responder->send([
                 'success' => false,
-                'error' => 'Database error',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

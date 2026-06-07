@@ -1,6 +1,6 @@
 <div>
     <h1>Login</h1>
-    <form id="login_form">
+    <form id="login_form" method="POST">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br><br>
         <label for="password">Password:</label>

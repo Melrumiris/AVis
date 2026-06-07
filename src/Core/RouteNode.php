@@ -1,10 +1,5 @@
 <?php
 
-namespace src\Core;
-
-use src\Actions\Action;
-use src\Responders\ErrorResponder;
-
 require_once ROOT . '/src/Actions/Action.php';
 
 class RouteNode implements Action
@@ -39,7 +34,7 @@ class RouteNode implements Action
     {
         $param = explode('/', $param, 2);
 
-        if (!isset($this->routes[$param[0]])) new ErrorResponder()->send(404, 'Source not found');
+        if (!isset($this->routes[$param[0]])) (new ErrorResponder())->send(404, 'Source not found');
 
         $this->routes[$param[0]]->execute($param[1] ?? null);
     }

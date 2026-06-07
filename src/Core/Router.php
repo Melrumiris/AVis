@@ -1,10 +1,5 @@
 <?php
 
-namespace src\Core;
-
-use src\Actions\Action;
-use src\Responders\ErrorResponder;
-
 require_once ROOT . '/src/Core/RouteNode.php';
 
 class Router
@@ -31,10 +26,10 @@ class Router
         $uri = substr($uri, 1);
         $uri = explode('/', $uri, 2);
 
-        if (!isset($this->routes[$method])) new ErrorResponder()->send(501, 'Method not supported');
+        if (!isset($this->routes[$method])) (new ErrorResponder())->send(501, 'Method not supported');
         if (!isset($this->routes[$method][$uri[0]]))
-            if ($method != 'GET') new ErrorResponder()->send(405, 'Method not allowed for this URL');
-            else new ErrorResponder()->send(404, 'Page not found');
+            if ($method != 'GET') (new ErrorResponder())->send(405, 'Method not allowed for this URL');
+            else (new ErrorResponder())->send(404, 'Page not found');
 
         $this->routes[$method][$uri[0]]->execute($uri[1] ?? null);
     }

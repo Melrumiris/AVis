@@ -1,6 +1,4 @@
 <?php
-
-namespace src\Core;
 class JWT
 {
     public string $token;

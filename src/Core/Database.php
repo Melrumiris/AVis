@@ -1,6 +1,5 @@
 <?php
 
-namespace src\Core;
 class Database
 {
     static private PDO $conn;
@@ -8,7 +7,8 @@ class Database
     public static function getConnection(): PDO
     {
         if (isset(self::$conn)) return self::$conn;
-        extract((require ROOT . '/config.php')['Database']);
+        $config = (require ROOT . '/config.php')['Database'];
+        extract($config);
         return self::$conn = new PDO("$driver:host=$host;port=$port;dbname=$name", $user, $password);
     }
 

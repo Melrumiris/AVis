@@ -1,6 +1,6 @@
 <div>
     <h1>Register</h1>
-    <form id="register_form">
+    <form id="register_form" method="POST">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br><br>
         <label for="password">Password:</label>
