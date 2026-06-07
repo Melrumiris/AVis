@@ -10,6 +10,7 @@
 <?php require ROOT . '/src/components/Navbar.php'; ?>
 
 <main style="padding-top: 80px;">
+    <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
     <h1 style="text-align: center;">Adăugare Date în Sistem</h1>
     
     <div class="upload-container">
@@ -37,6 +38,7 @@
                 <button type="submit" class="btn-submit btn-submit-csv">Încarcă Fișier</button>
             </form>
         </div>
+    </div>
     </div>
 </main>
 
