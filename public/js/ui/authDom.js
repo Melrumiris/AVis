@@ -22,6 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    bindForm('login_form', '/api/auth/login');
-    bindForm('register_form', '/api/auth/register');
+    bindForm('login_form', LOGIN_URL);
+    bindForm('register_form', REGISTER_URL);
 });

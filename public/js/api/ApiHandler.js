@@ -1,3 +1,6 @@
+const API_URL = '/api/v0';
+const REFRESH_URL = API_URL + '/auth/refresh';
+
 const ApiHandler = (() => {
     let accessToken = null;
 
@@ -17,6 +20,8 @@ const ApiHandler = (() => {
             ...options.headers
         };
 
+        Object.keys(headers).forEach(k => { if (headers[k] === null) delete headers[k]; });
+
         if (accessToken) {
             headers['Authorization'] = `Bearer ${accessToken}`;
         }
@@ -31,15 +36,15 @@ const ApiHandler = (() => {
                 try {
                     console.log("Access token expired. Retrieving new token...");
 
-                    const refreshResponse = await fetch('/api/auth/refresh', {
-                        method: 'POST',
+                    const refreshResponse = await fetch(REFRESH_URL, {
+                        method: 'GET',
                         headers: { 'Accept': 'application/json' }
                     });
 
                     const refreshData = await refreshResponse.json();
 
                     if (!refreshData.success) {
-                        throw new Error('Refresh token dead or invalid.');
+                        throw new Error('Refresh token expired or invalid.');
                     }
 
                     accessToken = refreshData.data.accessToken;
@@ -55,7 +60,7 @@ const ApiHandler = (() => {
                     refreshSubscribers = [];
                     accessToken = null;
 
-                    console.error("Authentication unrecoverable. Retreating to login.");
+                    console.error("Authentication failed");
                     window.location.href = '/login';
                     return Promise.reject(error);
                 }

@@ -1,3 +1,6 @@
+const LOGIN_URL = API_URL + '/auth/login';
+const REGISTER_URL = API_URL + '/auth/register';
+
 class AuthApi {
     static async authenticate(endpoint, credentials) {
         const response = await fetch(endpoint, {

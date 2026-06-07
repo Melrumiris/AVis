@@ -14,10 +14,7 @@ class PostLoginAction implements Action
         $responder = new JsonResponder();
 
         if (!empty($param))
-            $responder->send([
-                'success' => false,
-                'error' => 'Invalid endpoint',
-            ], 404);
+            (new ErrorResponder())->send(404, 'Invalid endpoint');
 
         $jsonInput = file_get_contents('php://input');
         $input = json_decode($jsonInput, true);
@@ -26,10 +23,7 @@ class PostLoginAction implements Action
         $password = $input['password'] ?? null;
 
         if (empty($username) || empty($password))
-            $responder->send([
-                'success' => false,
-                'error' => 'Empty username or password',
-            ], 400);
+            (new ErrorResponder())->send(400, 'Empty username or password');
 
         try {
             $userDomain = new UserDomain();
@@ -62,18 +56,10 @@ class PostLoginAction implements Action
                     'data' => $data,
                 ], 201);
             } else {
-                $responder->send([
-                    'success' => false,
-                    'error' => 'Invalid username or password',
-                ], 400);
+                (new ErrorResponder())->send(400, 'Invalid username or password');
             }
-        } catch (
-        PDOException $e
-        ) {
-            $responder->send([
-                'success' => false,
-                'error' => $e->getMessage(),
-            ], 500);
+        } catch (PDOException $e) {
+            (new ErrorResponder())->send(500, $e->getMessage());
         }
     }
 }

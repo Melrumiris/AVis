@@ -6,8 +6,10 @@ class RouteNode implements Action
 {
     private array $routes = [];
 
-    public function __construct(string $uri, Action $action)
+    public function __construct(?string $uri, Action $action)
     {
+        if ($uri === null) return;
+
         $uri = explode('/', $uri, 2);
         if (isset($uri[1]))
             $this->routes[$uri[0]] = new RouteNode($uri[1], $action);

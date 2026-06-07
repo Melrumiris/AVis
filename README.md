@@ -65,6 +65,7 @@ AVis/
 * `HtmlResponder`: Injects `$pageTemplate` into the correct layout.
 * `RedirectResponder`:  Redirects the browser to a different URL.
 * `ErrorResponder`: It sends an error page to the browser, it should be used like an exception caught and handled by the browser (APIs should still use `JsonResponder` for errors).
+* `FileResponder`: It can send dynamic data as a file to the browser (e.g. CSV) or serve existing files.
 
 ### 5. The 'src/Core/' Directory
 **Rule:** This contains core **utilities** to the project structure.

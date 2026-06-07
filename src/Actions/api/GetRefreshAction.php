@@ -1,5 +1,8 @@
 <?php
 
+require_once ROOT . '/src/Responders/JsonResponder.php';
+require_once ROOT . '/src/Responders/ErrorResponder.php';
+
 class GetRefreshAction implements Action
 {
 
@@ -8,18 +11,12 @@ class GetRefreshAction implements Action
         $responder = new JsonResponder();
 
         if (!empty($param))
-            $responder->send([
-                'success' => false,
-                'error' => 'Invalid endpoint',
-            ], 404);
+            (new ErrorResponder())->send(404, 'Invalid endpoint');
 
         $auth = new JwtAuth();
         $token = $_COOKIE['token'] ?? '';
         if (empty($token) || !$auth->verify(new JWT($token)))
-            $responder->send([
-                'success' => false,
-                'error' => 'Invalid or missing refresh token',
-            ], 401);
+            (new ErrorResponder())->send(401, 'Invalid or missing refresh token');
 
         $data = [
             'token' => $token,
