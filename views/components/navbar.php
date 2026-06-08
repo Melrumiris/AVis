@@ -8,6 +8,7 @@
 
 $isAuthenticated = false;
 $userRole = '';
+$userInitial = 'U';
 
 $navToken = $_COOKIE['token'] ?? '';
 if (!empty($navToken)) {
@@ -18,28 +19,44 @@ if (!empty($navToken)) {
         if ($navPayload && isset($navPayload->exp) && $navPayload->exp > time()) {
             $isAuthenticated = true;
             $userRole = $navPayload->role ?? '';
+            if (isset($navPayload->email)) {
+                $userInitial = strtoupper(substr($navPayload->email, 0, 1));
+            }
         }
     }
 }
 ?>
 
-<nav id="main-navbar" class="navbar" style="position: sticky; top: 0; z-index: 1000; background: white; border-bottom: 1px solid #e2e8f0; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
-    <a href="/" class="navbar-brand" style="font-weight: bold; font-size: 1.25rem; color: #0f172a; text-decoration: none;">AVis</a>
-    <ul class="navbar-links" style="list-style: none; display: flex; gap: 1.5rem; margin: 0; padding: 0;">
-        <?php if ($isAuthenticated): ?>
-            <li><a href="/about" style="color: #475569; text-decoration: none;">About</a></li>
-            <li><a href="/home" style="color: #475569; text-decoration: none;">Home</a></li>
-            <li><a href="/account" style="color: #475569; text-decoration: none;">Account</a></li>
-            <?php if ($userRole === 'admin'): ?>
-                <li><a href="/admin" style="color: #475569; text-decoration: none;">Admin</a></li>
+<nav id="main-navbar" class="navbar">
+    <a href="/" class="navbar-brand">AVis</a>
+    <div class="nav-right-actions">
+        <ul class="navbar-links">
+            <?php if ($isAuthenticated): ?>
+                <li><a href="/about" class="nav-link">About</a></li>
+                <li><a href="/home" class="nav-link">Home</a></li>
+                <?php if ($userRole === 'admin'): ?>
+                    <li><a href="/admin" class="nav-link">Admin</a></li>
+                <?php endif; ?>
+                <li><a href="#" id="btn-logout" class="nav-link" onclick="return false;" style="color: var(--color-error);">Logout</a></li>
+            <?php else: ?>
+                <li><a href="/about" class="nav-link">About</a></li>
+                <li><a href="/login" class="nav-link">Login</a></li>
+                <li><a href="/register" class="btn btn-primary">Register</a></li>
             <?php endif; ?>
-            <li><a href="#" id="btn-logout" onclick="return false;" style="color: #e53e3e; text-decoration: none;">Logout</a></li>
-        <?php else: ?>
-            <li><a href="/about" style="color: #475569; text-decoration: none;">About</a></li>
-            <li><a href="/login" style="color: #475569; text-decoration: none;">Login</a></li>
-            <li><a href="/register" style="color: #2563eb; font-weight: bold; text-decoration: none;">Register</a></li>
+        </ul>
+        
+        <button id="theme-toggle-btn" class="theme-toggle" aria-label="Toggle theme">
+            <script>
+                document.write(document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙');
+            </script>
+        </button>
+
+        <?php if ($isAuthenticated): ?>
+            <a href="/account" class="profile-pic" aria-label="My Account" title="My Account">
+                <?= htmlspecialchars($userInitial) ?>
+            </a>
         <?php endif; ?>
-    </ul>
+    </div>
 </nav>
 
 <?php if ($isAuthenticated): ?>

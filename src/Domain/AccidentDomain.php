@@ -206,4 +206,51 @@ class AccidentDomain
     {
         return 'A-' . substr(bin2hex(random_bytes(4)), 0, 8);
     }
+
+    /**
+     * Atomically replaces accidents within [startTime, endTime] with the given rows.
+     * Deletes existing records in the period first, then inserts the new batch.
+     */
+    public function replaceAccidentsBatch(string $startTime, string $endTime, array $rows): int
+    {
+        $this->db->beginTransaction();
+
+        try {
+            // Delete records in the time window
+            $del = $this->db->prepare(
+                'DELETE FROM accidents WHERE date_time >= :start AND date_time <= :end'
+            );
+            $del->execute([':start' => $startTime, ':end' => $endTime]);
+
+            // Insert new rows
+            $ins = $this->db->prepare(
+                'INSERT INTO accidents (id, date_time, severity, latitude, longitude, state)
+                 VALUES (:id, :date_time, :severity, :latitude, :longitude, :state)'
+            );
+
+            $count = 0;
+            foreach ($rows as $row) {
+                if (count($row) < 4) {
+                    continue;
+                }
+
+                $ins->execute([
+                    ':id'        => $this->generateAccidentId(),
+                    ':date_time' => $row[0],
+                    ':severity'  => (int) $row[1],
+                    ':latitude'  => (float) $row[2],
+                    ':longitude' => (float) $row[3],
+                    ':state'     => isset($row[4]) ? strtoupper(trim($row[4])) : null,
+                ]);
+
+                ++$count;
+            }
+
+            $this->db->commit();
+            return $count;
+        } catch (\Throwable $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+    }
 }

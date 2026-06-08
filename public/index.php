@@ -27,13 +27,14 @@ try {
     // --- API: Upload / Admin ---
     $router->addRoute('POST', '/api/v0/admin/accident', new PostAccidentAction());
     $router->addRoute('POST', '/api/v0/admin/accident/file', new PostAccidentFileAction());
+    $router->addRoute('PUT',  '/api/v0/admin/accident/file', new PutAccidentFileAction());
 
     // --- API: Profile ---
     $router->addRoute('GET', '/api/v0/profile', new GetProfileAction());
     $router->addRoute('PATCH', '/api/v0/profile', new PatchProfileAction());
 
     // --- Pages ---
-    $router->addRoute('GET', '/', new ViewAboutAction());
+    $router->addRoute('GET', '/', new ViewIndexAction());
     $router->addRoute('GET', '/about', new ViewAboutAction());
     $router->addRoute('GET', '/home', new ViewHomeAction());
     $router->addRoute('GET', '/login', new ViewLoginAction());

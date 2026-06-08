@@ -80,18 +80,47 @@ class UserDomain
     }
 
     /**
-     * Updates the user's email and bio fields.
+     * Updates the user's username and bio fields.
      */
-    public function updateProfile(string $userId, string $email, string $bio): bool
+    public function updateProfile(string $userId, string $username, string $bio): bool
     {
         $stmt = $this->db->prepare(
-            "UPDATE users SET email = :email, bio = :bio WHERE id = :id"
+            "UPDATE users SET username = :username, bio = :bio WHERE id = :id"
         );
 
         return $stmt->execute([
-            ':email' => $email,
-            ':bio'   => $bio,
-            ':id'    => $userId,
+            ':username' => $username,
+            ':bio'      => $bio,
+            ':id'       => $userId,
         ]);
+    }
+
+    /**
+     * Partially updates the user profile — only writes non-null fields.
+     * At least one of $username / $bio must be non-null.
+     */
+    public function updateProfilePartial(string $userId, ?string $username, ?string $bio): bool
+    {
+        $sets   = [];
+        $params = [':id' => $userId];
+
+        if ($username !== null) {
+            $sets[]              = 'username = :username';
+            $params[':username'] = $username;
+        }
+        if ($bio !== null) {
+            $sets[]          = 'bio = :bio';
+            $params[':bio']  = $bio;
+        }
+
+        if (empty($sets)) {
+            return false;
+        }
+
+        $stmt = $this->db->prepare(
+            'UPDATE users SET ' . implode(', ', $sets) . ' WHERE id = :id'
+        );
+
+        return $stmt->execute($params);
     }
 }

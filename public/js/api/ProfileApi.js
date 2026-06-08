@@ -5,10 +5,10 @@ class ProfileApi {
         return ApiHandler.request(PROFILE_URL);
     }
 
-    static async updateProfile(email, bio) {
+    static async updateProfile(payload) {
         return ApiHandler.request(PROFILE_URL, {
             method: 'PATCH',
-            body: JSON.stringify({ email, bio })
+            body: JSON.stringify(payload)
         });
     }
 }

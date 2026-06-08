@@ -20,6 +20,7 @@ require ROOT . '/src/Actions/api/GetReportFileAction.php';
 // --- Upload / Admin ---
 require ROOT . '/src/Actions/api/PostAccidentAction.php';
 require ROOT . '/src/Actions/api/PostAccidentFileAction.php';
+require ROOT . '/src/Actions/api/PutAccidentFileAction.php';
 
 // --- Profile ---
 require ROOT . '/src/Actions/api/GetProfileAction.php';
@@ -31,6 +32,7 @@ require ROOT . '/src/Actions/page/ViewRegisterAction.php';
 
 // --- Page: Main ---
 require ROOT . '/src/Actions/page/ViewAboutAction.php';
+require ROOT . '/src/Actions/page/ViewIndexAction.php';
 require ROOT . '/src/Actions/page/ViewHomeAction.php';
 require ROOT . '/src/Actions/page/ViewAccountAction.php';
 require ROOT . '/src/Actions/page/ViewAdminAction.php';

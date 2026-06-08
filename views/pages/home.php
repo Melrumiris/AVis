@@ -12,54 +12,64 @@
     <h1 class="page-title">Dashboard</h1>
 
     <!-- Shared filters -->
-    <div id="dashboard-filters" class="filter-bar" role="search" aria-label="Dashboard filters">
-        <label for="dash-sdate">From:</label>
-        <input type="date" id="dash-sdate" name="sdate">
+    <div id="dashboard-filters" class="filter-bar island-card" role="search" aria-label="Dashboard filters">
+        <div class="form-group">
+            <label for="dash-sdate" class="form-label">From</label>
+            <input type="date" id="dash-sdate" name="sdate" class="form-control">
+        </div>
 
-        <label for="dash-fdate">To:</label>
-        <input type="date" id="dash-fdate" name="fdate">
+        <div class="form-group">
+            <label for="dash-fdate" class="form-label">To</label>
+            <input type="date" id="dash-fdate" name="fdate" class="form-control">
+        </div>
 
-        <label for="dash-severity">Severity:</label>
-        <select id="dash-severity" name="severity">
-            <option value="ALL">All</option>
-            <option value="1">1 — Minor</option>
-            <option value="2">2 — Moderate</option>
-            <option value="3">3 — Severe</option>
-            <option value="4">4 — Fatal</option>
-        </select>
+        <div class="form-group">
+            <label for="dash-severity" class="form-label">Severity</label>
+            <select id="dash-severity" name="severity" class="form-control">
+                <option value="ALL">All</option>
+                <option value="1">1 — Minor</option>
+                <option value="2">2 — Moderate</option>
+                <option value="3">3 — Severe</option>
+                <option value="4">4 — Fatal</option>
+            </select>
+        </div>
 
-        <label for="dash-region">Region:</label>
-        <select id="dash-region" name="region">
-            <option value="ALL">All</option>
-            <option value="NE">North-East</option>
-            <option value="NW">North-West</option>
-            <option value="SE">South-East</option>
-            <option value="SW">South-West</option>
-        </select>
+        <div class="form-group">
+            <label for="dash-region" class="form-label">Region</label>
+            <select id="dash-region" name="region" class="form-control">
+                <option value="ALL">All</option>
+                <option value="NE">North-East</option>
+                <option value="NW">North-West</option>
+                <option value="SE">South-East</option>
+                <option value="SW">South-West</option>
+            </select>
+        </div>
 
-        <label for="dash-group-by">Group by:</label>
-        <select id="dash-group-by" name="group_by">
-            <option value="severity">Severity</option>
-            <option value="year">Year</option>
-            <option value="month">Month</option>
-            <option value="day">Day of Week</option>
-            <option value="location">Location</option>
-        </select>
+        <div class="form-group">
+            <label for="dash-group-by" class="form-label">Group by</label>
+            <select id="dash-group-by" name="group_by" class="form-control">
+                <option value="severity">Severity</option>
+                <option value="year">Year</option>
+                <option value="month">Month</option>
+                <option value="day">Day of Week</option>
+                <option value="location">Location</option>
+            </select>
+        </div>
 
-        <button id="btn-apply-filters" class="btn btn-primary">Apply Filters</button>
+        <button id="btn-apply-filters" class="btn btn-primary" style="align-self: flex-end; margin-bottom: var(--spacing-lg);">Apply Filters</button>
     </div>
 
     <!-- Dashboard grid -->
     <div id="dashboard-grid" class="dashboard-grid">
 
         <!-- Map Panel -->
-        <div class="dashboard-panel" id="panel-map">
+        <div class="dashboard-panel island-card" id="panel-map">
             <h2 class="panel-title">Accident Map</h2>
             <div id="map-container" role="region" aria-label="Accident map"></div>
         </div>
 
         <!-- Statistics Panel -->
-        <div class="dashboard-panel" id="panel-stats">
+        <div class="dashboard-panel island-card" id="panel-stats">
             <h2 class="panel-title">Statistics</h2>
             <div id="chart-container" role="img" aria-label="Statistics chart">
                 <canvas id="stats-chart"></canvas>
@@ -67,7 +77,7 @@
         </div>
 
         <!-- Data Table & Export Panel -->
-        <div class="dashboard-panel" id="panel-data">
+        <div class="dashboard-panel island-card" id="panel-data">
             <h2 class="panel-title">Data Table</h2>
 
             <div id="export-actions" class="export-bar" role="toolbar" aria-label="Export options">
@@ -76,7 +86,7 @@
                 <button id="btn-export-webp" class="btn btn-secondary" disabled>Export WebP</button>
             </div>
 
-            <div id="report-table-container" role="region" aria-label="Accident data table">
+            <div id="report-table-container" role="region" aria-label="Accident data table" style="overflow-x: auto;">
                 <table id="report-table" class="data-table" style="display:none;">
                     <thead>
                         <tr>

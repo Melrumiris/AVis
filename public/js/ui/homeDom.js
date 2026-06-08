@@ -73,8 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
             datasets: [{
                 label: 'Accident Count',
                 data: [],
-                backgroundColor: 'rgba(59, 130, 246, 0.7)',
-                borderColor: 'rgba(59, 130, 246, 1)',
+                backgroundColor: 'rgba(226, 88, 34, 0.7)',
+                borderColor: 'rgba(226, 88, 34, 1)',
                 borderWidth: 1
             }]
         },

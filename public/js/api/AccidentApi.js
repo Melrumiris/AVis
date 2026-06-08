@@ -18,4 +18,16 @@ class AccidentApi {
             body: formData
         });
     }
+
+    static async replaceFile(file, startTime, endTime) {
+        const formData = new FormData();
+        formData.append('csv_file', file);
+        const encodedStart = encodeURIComponent(startTime);
+        const encodedEnd   = encodeURIComponent(endTime);
+        return ApiHandler.request(`${ACCIDENT_FILE_URL}/${encodedStart}/${encodedEnd}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': null },
+            body: formData
+        });
+    }
 }

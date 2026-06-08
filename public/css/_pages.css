@@ -1,0 +1,106 @@
+/**
+ * public/css/_pages.css
+ * Page-Specific Layouts
+ */
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+}
+
+@media (min-width: 992px) {
+    .dashboard-grid {
+        grid-template-columns: 2fr 1fr;
+    }
+    #panel-map {
+        grid-column: 1 / 2;
+    }
+    #panel-stats {
+        grid-column: 2 / 3;
+    }
+    #panel-data {
+        grid-column: 1 / -1;
+    }
+}
+
+.dashboard-panel .panel-title {
+    font-size: 1.25rem;
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
+#map-container {
+    height: 450px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    z-index: 1; /* Keep leaflet controls below navbar */
+}
+
+#chart-container {
+    height: 450px;
+    position: relative;
+}
+
+.export-bar {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* Auth Containers */
+.auth-container {
+    max-width: 400px;
+    margin: 4rem auto;
+}
+
+.auth-title {
+    text-align: center;
+    font-size: 1.75rem;
+    margin-bottom: var(--spacing-xl);
+}
+
+.auth-links {
+    margin-top: var(--spacing-lg);
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* Admin / Account Grids */
+.upload-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+}
+
+@media (min-width: 768px) {
+    .upload-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+#account-page {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.account-panel {
+    max-width: 600px;
+}
+
+.form-hint {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-md);
+}
+
+.form-hint code {
+    display: inline-block;
+    background-color: var(--bg-body);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+}
