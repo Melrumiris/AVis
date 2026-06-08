@@ -2,10 +2,10 @@ const ACCIDENT_URL = API_URL + '/admin/accident';
 const ACCIDENT_FILE_URL = ACCIDENT_URL + '/file';
 
 class AccidentApi {
-    static async insertManual(data_ora, severitate, latitudine, longitudine) {
+    static async insertManual(date_time, severity, latitude, longitude, state = '') {
         return ApiHandler.request(ACCIDENT_URL, {
             method: 'POST',
-            body: JSON.stringify({ data_ora, severitate, latitudine, longitudine })
+            body: JSON.stringify({ date_time, severity, latitude, longitude, state })
         });
     }
 

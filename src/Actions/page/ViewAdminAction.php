@@ -3,11 +3,12 @@
 declare(strict_types=1);
 
 require_once ROOT . '/src/Core/JwtAuth.php';
+require_once ROOT . '/src/Core/UserRole.php';
 require_once ROOT . '/src/Responders/HtmlResponder.php';
 require_once ROOT . '/src/Responders/ErrorResponder.php';
 require_once ROOT . '/src/Responders/RedirectResponder.php';
 
-class ViewUploadAction implements Action
+class ViewAdminAction implements Action
 {
     public function execute(?string $param): void
     {
@@ -19,13 +20,13 @@ class ViewUploadAction implements Action
         $parts = (new JWT($token))->split();
         $role  = $parts['payload']->role ?? '';
 
-        if ($role !== 'admin') {
+        if ($role !== UserRole::Admin->value) {
             (new ErrorResponder())->send(403, 'Forbidden: admin access required');
         }
 
         $viewPath     = ROOT . '/views/layouts/main.php';
-        $pageTemplate = ROOT . '/views/pages/upload.php';
+        $pageTemplate = ROOT . '/views/pages/admin.php';
 
-        (new HtmlResponder())->send($viewPath, $pageTemplate, 'Upload Data');
+        (new HtmlResponder())->send($viewPath, $pageTemplate, 'Admin Console');
     }
 }

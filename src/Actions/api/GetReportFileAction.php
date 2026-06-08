@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 require_once ROOT . '/src/Domain/AccidentDomain.php';
 require_once ROOT . '/src/Core/JwtAuth.php';
-require_once ROOT . '/src/Responders/JsonResponder.php';
+require_once ROOT . '/src/Responders/FileResponder.php';
 require_once ROOT . '/src/Responders/ErrorResponder.php';
 
-class GetMapDataAction implements Action
+class GetReportFileAction implements Action
 {
     public function execute(?string $param): void
     {
@@ -15,7 +15,11 @@ class GetMapDataAction implements Action
             (new ErrorResponder())->send(404, 'Invalid endpoint');
         }
 
-        $payload = (new JwtAuth())->authenticateApiRequest();
+        // Use cookie-based auth because window.location.href cannot send Authorization headers
+        $token = $_COOKIE['token'] ?? '';
+        if (empty($token) || !(new JwtAuth())->verify(new JWT($token))) {
+            (new ErrorResponder())->send(401, 'Authentication required');
+        }
 
         $sdate = trim($_GET['sdate'] ?? '');
         $fdate = trim($_GET['fdate'] ?? '');
@@ -29,14 +33,24 @@ class GetMapDataAction implements Action
 
         try {
             $domain = new AccidentDomain();
-            $points = $domain->getMapPoints($sdate, $fdate);
+            $rows   = $domain->getReportData($sdate, $fdate);
         } catch (PDOException $e) {
             (new ErrorResponder())->send(500, 'Database error: ' . $e->getMessage());
         }
 
-        (new JsonResponder())->send([
-            'success' => true,
-            'data'    => $points,
-        ]);
+        // Build CSV string in memory
+        $csv = "Date_Time,Severity,Latitude,Longitude,State\n";
+        foreach ($rows as $row) {
+            $csv .= sprintf(
+                "%s,%s,%s,%s,%s\n",
+                $row['date_time'] ?? '',
+                $row['severity'] ?? '',
+                $row['latitude'] ?? '',
+                $row['longitude'] ?? '',
+                $row['state'] ?? ''
+            );
+        }
+
+        (new FileResponder())->send($csv, 'accidents.csv', 'text/csv', false, true);
     }
 }

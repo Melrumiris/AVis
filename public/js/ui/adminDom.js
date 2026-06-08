@@ -1,3 +1,8 @@
+/**
+ * adminDom.js — Admin console DOM controller
+ *
+ * Handles manual accident entry and CSV file upload forms.
+ */
 document.addEventListener('DOMContentLoaded', () => {
     const showMessage = (elementId, text, isError = false) => {
         const el = document.getElementById(elementId);
@@ -5,19 +10,21 @@ document.addEventListener('DOMContentLoaded', () => {
         el.style.color = isError ? '#e53e3e' : '#38a169';
     };
 
+    // ─── Manual Entry ────────────────────────────────────────────
     document.getElementById('form-manual-accident').addEventListener('submit', async function (e) {
         e.preventDefault();
         const btn = this.querySelector('button[type="submit"]');
         btn.disabled = true;
         btn.textContent = 'Saving...';
 
-        const dataOra   = document.getElementById('m-data-ora').value.replace('T', ' ') + ':00';
-        const sev       = parseInt(document.getElementById('m-severitate').value, 10);
-        const lat       = parseFloat(document.getElementById('m-latitudine').value);
-        const lng       = parseFloat(document.getElementById('m-longitudine').value);
+        const dateTime  = document.getElementById('m-date-time').value.replace('T', ' ') + ':00';
+        const severity  = parseInt(document.getElementById('m-severity').value, 10);
+        const latitude  = parseFloat(document.getElementById('m-latitude').value);
+        const longitude = parseFloat(document.getElementById('m-longitude').value);
+        const state     = document.getElementById('m-state').value.toUpperCase().trim();
 
         try {
-            const result = await AccidentApi.insertManual(dataOra, sev, lat, lng);
+            const result = await AccidentApi.insertManual(dateTime, severity, latitude, longitude, state);
             if (result.success) {
                 showMessage('msg-manual', 'Accident added successfully.');
                 this.reset();
@@ -32,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // ─── CSV Upload ──────────────────────────────────────────────
     document.getElementById('form-csv-accident').addEventListener('submit', async function (e) {
         e.preventDefault();
         const btn  = this.querySelector('button[type="submit"]');

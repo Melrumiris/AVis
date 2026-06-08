@@ -50,6 +50,7 @@ AVis/
     * For pages that require an account, the Page Actions should verify **cookies** for the refresh token.
 * **Restriction:** Actions must **never** contain SQL queries. They must rely on the Domain layer for data.
     * Actions should utilize `try/catch` blocks around the **Domain** interactions to prevent unhandled PDOexceptions.
+* For ease of routing, Actions can inherit RouteNodes as well in the case where an API uses the same path as another but with an extra parameter.
 
 
 ### 3. The `src/Domain/` Directory

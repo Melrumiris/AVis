@@ -18,24 +18,7 @@ class PostAccidentFileAction implements Action
             (new ErrorResponder())->send(404, 'Invalid endpoint');
         }
 
-        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-        if (!str_starts_with($authHeader, 'Bearer ')) {
-            (new ErrorResponder())->send(401, 'Missing or malformed Authorization header');
-        }
-
-        $rawToken = substr($authHeader, 7);
-        $auth     = new JwtAuth();
-
-        if (!$auth->verify(new JWT($rawToken))) {
-            (new ErrorResponder())->send(401, 'Invalid or expired access token');
-        }
-
-        $parts = (new JWT($rawToken))->split();
-        $role  = $parts['payload']->role ?? '';
-
-        if ($role !== 'admin') {
-            (new ErrorResponder())->send(403, 'Forbidden: admin access required');
-        }
+        $payload = (new JwtAuth())->authenticateAdminRequest();
 
         if (
             !isset($_FILES['csv_file']) ||

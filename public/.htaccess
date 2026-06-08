@@ -1,5 +1,9 @@
 RewriteEngine On
 
+# Pass Authorization header to $_SERVER['HTTP_AUTHORIZATION']
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 

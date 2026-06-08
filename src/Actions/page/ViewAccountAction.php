@@ -7,7 +7,7 @@ require_once ROOT . '/src/Responders/HtmlResponder.php';
 require_once ROOT . '/src/Responders/ErrorResponder.php';
 require_once ROOT . '/src/Responders/RedirectResponder.php';
 
-class ViewMapAction implements Action
+class ViewAccountAction implements Action
 {
     public function execute(?string $param): void
     {
@@ -17,8 +17,8 @@ class ViewMapAction implements Action
         }
 
         $viewPath     = ROOT . '/views/layouts/main.php';
-        $pageTemplate = ROOT . '/views/pages/map.php';
+        $pageTemplate = ROOT . '/views/pages/account.php';
 
-        (new HtmlResponder())->send($viewPath, $pageTemplate, 'Accident Map');
+        (new HtmlResponder())->send($viewPath, $pageTemplate, 'My Account');
     }
 }

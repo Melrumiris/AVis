@@ -15,15 +15,7 @@ class GetReportDataAction implements Action
             (new ErrorResponder())->send(404, 'Invalid endpoint');
         }
 
-        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-        if (!str_starts_with($authHeader, 'Bearer ')) {
-            (new ErrorResponder())->send(401, 'Missing or malformed Authorization header');
-        }
-
-        $rawToken = substr($authHeader, 7);
-        if (!(new JwtAuth())->verify(new JWT($rawToken))) {
-            (new ErrorResponder())->send(401, 'Invalid or expired access token');
-        }
+        $payload = (new JwtAuth())->authenticateApiRequest();
 
         $sdate = trim($_GET['sdate'] ?? '');
         $fdate = trim($_GET['fdate'] ?? '');

@@ -16,18 +16,18 @@ class AccidentDomain
 
     public function getMapPoints(string $sdate, string $fdate): array
     {
-        $sql  = 'SELECT latitudine AS lat, longitudine AS lng, severitate
-                 FROM   accidente
-                 WHERE  latitudine  IS NOT NULL
-                   AND  longitudine IS NOT NULL';
+        $sql  = 'SELECT latitude AS lat, longitude AS lng, severity
+                 FROM   accidents
+                 WHERE  latitude  IS NOT NULL
+                   AND  longitude IS NOT NULL';
         $params = [];
 
         if ($sdate !== '') {
-            $sql       .= ' AND data_ora >= :sdate';
+            $sql       .= ' AND date_time >= :sdate';
             $params[':sdate'] = $sdate . ' 00:00:00';
         }
         if ($fdate !== '') {
-            $sql       .= ' AND data_ora <= :fdate';
+            $sql       .= ' AND date_time <= :fdate';
             $params[':fdate'] = $fdate . ' 23:59:59';
         }
 
@@ -50,61 +50,61 @@ class AccidentDomain
         $params = [];
 
         if ($sdate !== '') {
-            $where           .= ' AND data_ora >= :sdate';
+            $where           .= ' AND date_time >= :sdate';
             $params[':sdate'] = $sdate . ' 00:00:00';
         }
         if ($fdate !== '') {
-            $where           .= ' AND data_ora <= :fdate';
+            $where           .= ' AND date_time <= :fdate';
             $params[':fdate'] = $fdate . ' 23:59:59';
         }
         if ($severity !== 'ALL') {
-            $where              .= ' AND severitate = :sev';
+            $where              .= ' AND severity = :sev';
             $params[':sev']      = (int) $severity;
         }
 
         $where .= match ($region) {
-            'NE'    => ' AND latitudine >= 39.8 AND longitudine >= -98.5',
-            'NW'    => ' AND latitudine >= 39.8 AND longitudine <  -98.5',
-            'SE'    => ' AND latitudine <  39.8 AND longitudine >= -98.5',
-            'SW'    => ' AND latitudine <  39.8 AND longitudine <  -98.5',
+            'NE'    => ' AND latitude >= 39.8 AND longitude >= -98.5',
+            'NW'    => ' AND latitude >= 39.8 AND longitude <  -98.5',
+            'SE'    => ' AND latitude <  39.8 AND longitude >= -98.5',
+            'SW'    => ' AND latitude <  39.8 AND longitude <  -98.5',
             default => '',
         };
 
         $sql = match ($groupBy) {
-            'an'       => "SELECT EXTRACT(YEAR  FROM data_ora)::text AS eticheta,
+            'year'     => "SELECT EXTRACT(YEAR  FROM date_time)::text AS label,
                                   COUNT(*) AS total
-                           FROM   accidente {$where}
-                           GROUP  BY EXTRACT(YEAR  FROM data_ora)
-                           ORDER  BY eticheta",
+                           FROM   accidents {$where}
+                           GROUP  BY EXTRACT(YEAR  FROM date_time)
+                           ORDER  BY label",
 
-            'luna'     => "SELECT EXTRACT(MONTH FROM data_ora)::text AS eticheta,
+            'month'    => "SELECT EXTRACT(MONTH FROM date_time)::text AS label,
                                   COUNT(*) AS total
-                           FROM   accidente {$where}
-                           GROUP  BY EXTRACT(MONTH FROM data_ora)
-                           ORDER  BY eticheta",
+                           FROM   accidents {$where}
+                           GROUP  BY EXTRACT(MONTH FROM date_time)
+                           ORDER  BY label",
 
-            'ziua'     => "SELECT EXTRACT(DOW   FROM data_ora)::text AS eticheta,
+            'day'      => "SELECT EXTRACT(DOW   FROM date_time)::text AS label,
                                   COUNT(*) AS total
-                           FROM   accidente {$where}
-                           GROUP  BY EXTRACT(DOW   FROM data_ora)
-                           ORDER  BY eticheta",
+                           FROM   accidents {$where}
+                           GROUP  BY EXTRACT(DOW   FROM date_time)
+                           ORDER  BY label",
 
             'location' => "SELECT CASE
-                                    WHEN latitudine >= 39.8 AND longitudine >= -98.5 THEN 'North-East'
-                                    WHEN latitudine >= 39.8 AND longitudine <  -98.5 THEN 'North-West'
-                                    WHEN latitudine <  39.8 AND longitudine >= -98.5 THEN 'South-East'
-                                    WHEN latitudine <  39.8 AND longitudine <  -98.5 THEN 'South-West'
+                                    WHEN latitude >= 39.8 AND longitude >= -98.5 THEN 'North-East'
+                                    WHEN latitude >= 39.8 AND longitude <  -98.5 THEN 'North-West'
+                                    WHEN latitude <  39.8 AND longitude >= -98.5 THEN 'South-East'
+                                    WHEN latitude <  39.8 AND longitude <  -98.5 THEN 'South-West'
                                     ELSE 'Unknown'
-                                  END AS eticheta,
+                                  END AS label,
                                   COUNT(*) AS total
-                           FROM   accidente {$where}
-                           GROUP  BY eticheta",
+                           FROM   accidents {$where}
+                           GROUP  BY label",
 
-            default    => "SELECT severitate::text AS eticheta,
+            default    => "SELECT severity::text AS label,
                                   COUNT(*) AS total
-                           FROM   accidente {$where}
-                           GROUP  BY severitate
-                           ORDER  BY severitate",
+                           FROM   accidents {$where}
+                           GROUP  BY severity
+                           ORDER  BY severity",
         };
 
         $stmt = $this->db->prepare($sql);
@@ -115,21 +115,21 @@ class AccidentDomain
 
     public function getReportData(string $sdate, string $fdate): array
     {
-        $sql    = 'SELECT data_ora, severitate, latitudine, longitudine
-                   FROM   accidente
+        $sql    = 'SELECT date_time, severity, latitude, longitude, state
+                   FROM   accidents
                    WHERE  1=1';
         $params = [];
 
         if ($sdate !== '') {
-            $sql             .= ' AND data_ora >= :sdate';
+            $sql             .= ' AND date_time >= :sdate';
             $params[':sdate'] = $sdate . ' 00:00:00';
         }
         if ($fdate !== '') {
-            $sql             .= ' AND data_ora <= :fdate';
+            $sql             .= ' AND date_time <= :fdate';
             $params[':fdate'] = $fdate . ' 23:59:59';
         }
 
-        $sql .= ' ORDER BY data_ora DESC LIMIT 10000';
+        $sql .= ' ORDER BY date_time DESC LIMIT 10000';
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
@@ -138,47 +138,72 @@ class AccidentDomain
     }
 
     public function insertAccident(
-        string $dataOra,
-        int    $severity,
-        float  $lat,
-        float  $lng
+        string  $dateTime,
+        int     $severity,
+        float   $lat,
+        float   $lng,
+        ?string $state = null
     ): bool {
         $stmt = $this->db->prepare(
-            'INSERT INTO accidente (data_ora, severitate, latitudine, longitudine)
-             VALUES (:data_ora, :severitate, :latitudine, :longitudine)'
+            'INSERT INTO accidents (id, date_time, severity, latitude, longitude, state)
+             VALUES (:id, :date_time, :severity, :latitude, :longitude, :state)'
         );
 
         return $stmt->execute([
-            ':data_ora'    => $dataOra,
-            ':severitate'  => $severity,
-            ':latitudine'  => $lat,
-            ':longitudine' => $lng,
+            ':id'         => $this->generateAccidentId(),
+            ':date_time'  => $dateTime,
+            ':severity'   => $severity,
+            ':latitude'   => $lat,
+            ':longitude'  => $lng,
+            ':state'      => $state,
         ]);
     }
 
+    /**
+     * Inserts a batch of accident rows inside a database transaction.
+     * Rolls back on any failure to prevent partial CSV ingestions.
+     */
     public function insertAccidentsBatch(array $rows): int
     {
         $stmt = $this->db->prepare(
-            'INSERT INTO accidente (data_ora, severitate, latitudine, longitudine)
-             VALUES (:data_ora, :severitate, :latitudine, :longitudine)'
+            'INSERT INTO accidents (id, date_time, severity, latitude, longitude, state)
+             VALUES (:id, :date_time, :severity, :latitude, :longitude, :state)'
         );
 
-        $count = 0;
-        foreach ($rows as $row) {
-            if (count($row) < 4) {
-                continue;
+        $this->db->beginTransaction();
+
+        try {
+            $count = 0;
+            foreach ($rows as $row) {
+                if (count($row) < 4) {
+                    continue;
+                }
+
+                $stmt->execute([
+                    ':id'         => $this->generateAccidentId(),
+                    ':date_time'  => $row[0],
+                    ':severity'   => (int) $row[1],
+                    ':latitude'   => (float) $row[2],
+                    ':longitude'  => (float) $row[3],
+                    ':state'      => isset($row[4]) ? strtoupper(trim($row[4])) : null,
+                ]);
+
+                ++$count;
             }
 
-            $stmt->execute([
-                ':data_ora'    => $row[0],
-                ':severitate'  => (int) $row[1],
-                ':latitudine'  => (float) $row[2],
-                ':longitudine' => (float) $row[3],
-            ]);
-
-            ++$count;
+            $this->db->commit();
+            return $count;
+        } catch (\Throwable $e) {
+            $this->db->rollBack();
+            throw $e;
         }
+    }
 
-        return $count;
+    /**
+     * Generates a unique accident ID in format A-XXXXXXXX (UUID-based).
+     */
+    private function generateAccidentId(): string
+    {
+        return 'A-' . substr(bin2hex(random_bytes(4)), 0, 8);
     }
 }

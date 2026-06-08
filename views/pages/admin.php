@@ -1,32 +1,30 @@
 <?php
 /**
- * views/pages/upload.php
+ * views/pages/admin.php
  *
- * Upload / Admin data-entry page fragment — injected into views/layouts/main.php.
- * Only reachable by users with role = 'admin' (enforced in ViewUploadAction).
- * All API calls are handled via ApiHandler.js → /api/v0/admin/accident and
- * /api/v0/admin/accident/file.
- * No PHP business logic here.
+ * Admin console page fragment — injected into views/layouts/main.php.
+ * Only reachable by users with role = 'admin' (enforced in ViewAdminAction).
+ * Contains manual accident entry and CSV upload forms.
  */
 ?>
 
-<section id="upload-page" class="page-section">
-    <h1 class="page-title">Add Accident Data</h1>
+<section id="admin-page" class="page-section">
+    <h1 class="page-title">Admin Console</h1>
 
-    <div id="upload-panels" class="upload-grid">
+    <div id="admin-panels" class="upload-grid">
 
         <div class="upload-panel" id="panel-manual">
             <h2 class="panel-title">Manual Entry</h2>
 
             <form id="form-manual-accident" novalidate>
                 <div class="form-group">
-                    <label for="m-data-ora">Date &amp; Time</label>
-                    <input type="datetime-local" id="m-data-ora" name="data_ora" required>
+                    <label for="m-date-time">Date &amp; Time</label>
+                    <input type="datetime-local" id="m-date-time" name="date_time" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="m-severitate">Severity</label>
-                    <select id="m-severitate" name="severitate" required>
+                    <label for="m-severity">Severity</label>
+                    <select id="m-severity" name="severity" required>
                         <option value="">— select —</option>
                         <option value="1">1 — Minor</option>
                         <option value="2">2 — Moderate</option>
@@ -36,15 +34,21 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="m-latitudine">Latitude</label>
-                    <input type="number" step="any" id="m-latitudine" name="latitudine"
+                    <label for="m-latitude">Latitude</label>
+                    <input type="number" step="any" id="m-latitude" name="latitude"
                            placeholder="e.g. 37.0902" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="m-longitudine">Longitude</label>
-                    <input type="number" step="any" id="m-longitudine" name="longitudine"
+                    <label for="m-longitude">Longitude</label>
+                    <input type="number" step="any" id="m-longitude" name="longitude"
                            placeholder="e.g. -95.7129" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="m-state">State (2-letter code)</label>
+                    <input type="text" maxlength="2" id="m-state" name="state"
+                           placeholder="e.g. CA" style="text-transform:uppercase;">
                 </div>
 
                 <button type="submit" id="btn-submit-manual" class="btn btn-primary">
@@ -61,7 +65,7 @@
             <form id="form-csv-accident" novalidate>
                 <p class="form-hint">
                     Accepted format (header row + data rows):<br>
-                    <code>Data_Ora, Severitate, Latitudine, Longitudine</code>
+                    <code>Date_Time, Severity, Latitude, Longitude, State</code>
                 </p>
 
                 <div class="form-group">
@@ -81,4 +85,4 @@
 </section>
 
 <script src="/js/api/AccidentApi.js"></script>
-<script src="/js/ui/uploadDom.js"></script>
+<script src="/js/ui/adminDom.js"></script>
