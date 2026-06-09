@@ -106,14 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ─── Map Setup ───────────────────────────────────────────────
-    // Fix missing Leaflet marker icons by explicitly setting CDN paths
-    delete L.Icon.Default.prototype._getIconUrl;
-    L.Icon.Default.mergeOptions({
-        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-    });
-
     let initialLat = 37.0902, initialLng = -95.7129, initialZoom = 4;
     try {
         const storedView = JSON.parse(localStorage.getItem('avis_map_view'));
@@ -122,31 +114,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const map = L.map('map-container').setView([initialLat, initialLng], initialZoom);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
-    const markerGroup = L.layerGroup().addTo(map);
+    
+    // Explicitly create and add the feature group
+    const markerGroup = L.featureGroup().addTo(map);
+
+    // SANITY CHECK: This proves Leaflet can draw SVGs
+    L.circleMarker([40.7128, -74.0060], {color: 'blue', radius: 10}).bindPopup('Sanity Check').addTo(map);
 
     map.on('moveend', () => {
         const center = map.getCenter();
         localStorage.setItem('avis_map_view', JSON.stringify({ lat: center.lat, lng: center.lng, zoom: map.getZoom() }));
     });
 
-    // Invalidate map size on viewport resize (critical for mobile responsiveness)
-    let mapResizeTimeout;
-    window.addEventListener('resize', () => {
-        clearTimeout(mapResizeTimeout);
-        mapResizeTimeout = setTimeout(() => map.invalidateSize(), 200);
-    });
-    // Also observe the container itself for layout-driven size changes
-    if (typeof ResizeObserver !== 'undefined') {
-        new ResizeObserver(() => map.invalidateSize()).observe(document.getElementById('map-container'));
-    }
-
     document.getElementById('btn-toggle-map').addEventListener('click', () => {
-        const btn = document.getElementById('btn-toggle-map');
         const pMap = document.getElementById('panel-map');
         const pStats = document.getElementById('panel-stats');
         pMap.classList.toggle('map-minimized');
         pStats.classList.toggle('expanded');
-        btn.textContent = pMap.classList.contains('map-minimized') ? '⊞ Maximize' : '⊟ Minimize';
         setTimeout(() => map.invalidateSize(), 300);
     });
 
@@ -154,13 +138,42 @@ document.addEventListener('DOMContentLoaded', () => {
         markerGroup.clearLayers();
         try {
             const result = await MapApi.getPoints(filters);
+            
+            // Diagnostics
+            console.log("DIAGNOSTIC: Raw Map API Response:", result);
+            if(result.data && result.data.length > 0) { 
+                console.log("DIAGNOSTIC: Sample Coordinate [0]:", result.data[0]); 
+            }
+            
             if (!result.success) return;
+            
             result.data.forEach(p => {
-                if (p.lat && p.lng) {
-                    L.marker([p.lat, p.lng]).bindPopup(`<b>Accident</b><br>Severity: ${p.severity}`).addTo(markerGroup);
+                let safeLat = parseFloat(p.lat);
+                let safeLng = parseFloat(p.lng);
+                
+                if (!isNaN(safeLat) && !isNaN(safeLng) && safeLat !== 0) {
+                    let markerColor = '#10B981'; // Green for Severity 1
+                    if (p.severity == 2) markerColor = '#F59E0B'; // Yellow
+                    if (p.severity == 3) markerColor = '#E25822'; // Terra-Cotta
+                    if (p.severity == 4) markerColor = '#EF4444'; // Red
+
+                    L.circleMarker([safeLat, safeLng], {
+                        radius: 6,
+                        fillColor: markerColor,
+                        color: '#ffffff',
+                        weight: 1,
+                        opacity: 1,
+                        fillOpacity: 0.85
+                    })
+                    .bindPopup(`<b>Accident Data</b><br>Severity: ${p.severity}<br>Lat: ${safeLat}, Lng: ${safeLng}`)
+                    .addTo(markerGroup);
+                } else {
+                    console.error("DIAGNOSTIC: Invalid coordinate dropped:", p);
                 }
             });
-        } catch (err) { console.error('Failed to load map points:', err); }
+        } catch (err) { 
+            console.error('Failed to load map points:', err); 
+        }
     };
 
     // ─── Chart Setup ─────────────────────────────────────────────
@@ -510,8 +523,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 markerGroup.clearLayers();
                 loadedData.forEach(p => {
-                    if (p.latitude && p.longitude) {
-                        L.marker([p.latitude, p.longitude]).bindPopup(`<b>Accident</b><br>Severity: ${p.severity}`).addTo(markerGroup);
+                    let safeLat = parseFloat(p.latitude);
+                    let safeLng = parseFloat(p.longitude);
+                    
+                    if (!isNaN(safeLat) && !isNaN(safeLng) && safeLat !== 0) {
+                        const color = severityColor(p.severity);
+                        const label = p.severity ? `Severity ${p.severity}` : 'Unknown';
+                        const date  = p.date_time || 'N/A';
+                        const loc   = [p.city, p.state].filter(Boolean).join(', ') || 'N/A';
+                        L.circleMarker([safeLat, safeLng], {
+                            radius:      5,
+                            fillColor:   color,
+                            color:       '#ffffff',
+                            weight:      1,
+                            fillOpacity: 0.8,
+                            opacity:     1
+                        }).bindPopup(
+                            `<b>Accident</b><br>` +
+                            `<span style="color:${color};font-weight:600">${label}</span><br>` +
+                            `📅 ${date}<br>` +
+                            `📍 ${loc}`
+                        ).addTo(markerGroup);
+                    } else {
+                        console.error("DIAGNOSTIC: Invalid coordinate dropped:", p);
                     }
                 });
 
