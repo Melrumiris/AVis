@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title ?? 'AVis') ?></title>
     <!-- Prevent FOUC for theme -->
     <script>
@@ -14,6 +15,7 @@
         })();
     </script>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="AVis Recent Accidents Feed" href="/rss">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
     <link rel="icon" type="image/x-icon" href="/img/favicon.ico">

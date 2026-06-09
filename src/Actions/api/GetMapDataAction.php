@@ -9,6 +9,12 @@ require_once ROOT . '/src/Responders/ErrorResponder.php';
 
 class GetMapDataAction implements Action
 {
+    private const ALLOWED_FILTERS = [
+        'sdate', 'fdate', 'severity', 'region', 'city', 'county', 
+        'weather_condition', 'temperature', 'visibility', 
+        'crossing', 'junction', 'traffic_signal', 'sunrise_sunset'
+    ];
+
     public function execute(?string $param): void
     {
         if (!empty($param)) {
@@ -17,19 +23,23 @@ class GetMapDataAction implements Action
 
         $payload = (new JwtAuth())->authenticateApiRequest();
 
-        $sdate = trim($_GET['sdate'] ?? '');
-        $fdate = trim($_GET['fdate'] ?? '');
+        $filters = [];
+        foreach (self::ALLOWED_FILTERS as $key) {
+            if (isset($_GET[$key]) && $_GET[$key] !== '') {
+                $filters[$key] = trim((string)$_GET[$key]);
+            }
+        }
 
-        if ($sdate !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $sdate)) {
+        if (!empty($filters['sdate']) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $filters['sdate'])) {
             (new ErrorResponder())->send(400, 'Invalid sdate format. Expected YYYY-MM-DD');
         }
-        if ($fdate !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fdate)) {
+        if (!empty($filters['fdate']) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $filters['fdate'])) {
             (new ErrorResponder())->send(400, 'Invalid fdate format. Expected YYYY-MM-DD');
         }
 
         try {
             $domain = new AccidentDomain();
-            $points = $domain->getMapPoints($sdate, $fdate);
+            $points = $domain->getMapPoints($filters);
         } catch (PDOException $e) {
             (new ErrorResponder())->send(500, 'Database error: ' . $e->getMessage());
         }

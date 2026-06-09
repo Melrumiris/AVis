@@ -29,9 +29,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const latitude  = parseFloat(document.getElementById('m-latitude').value);
         const longitude = parseFloat(document.getElementById('m-longitude').value);
         const state     = document.getElementById('m-state').value.toUpperCase().trim();
+        
+        const city = document.getElementById('m-city').value;
+        const county = document.getElementById('m-county').value;
+        const weather_condition = document.getElementById('m-weather').value;
+        const temperature = document.getElementById('m-temp').value;
+        const visibility = document.getElementById('m-visibility').value;
+        const crossing = document.getElementById('m-crossing').value;
+        const junction = document.getElementById('m-junction').value;
+        const traffic_signal = document.getElementById('m-signal').value;
+        const sunrise_sunset = document.getElementById('m-daynight').value;
+
+        const payload = {
+            date_time: dateTime, severity, latitude, longitude, state,
+            city, county, weather_condition, temperature, visibility,
+            crossing, junction, traffic_signal, sunrise_sunset
+        };
 
         try {
-            const result = await AccidentApi.insertManual(dateTime, severity, latitude, longitude, state);
+            const result = await AccidentApi.insertManual(payload);
             if (result.success) {
                 showMessage('msg-manual', 'Accident added successfully.');
                 this.reset();

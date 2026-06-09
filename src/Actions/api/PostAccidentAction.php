@@ -25,6 +25,16 @@ class PostAccidentAction implements Action
         $lat       = $input['latitude']        ?? null;
         $lng       = $input['longitude']       ?? null;
         $state     = trim($input['state']          ?? '');
+        
+        $city = isset($input['city']) && $input['city'] !== '' ? trim($input['city']) : null;
+        $county = isset($input['county']) && $input['county'] !== '' ? trim($input['county']) : null;
+        $weatherCondition = isset($input['weather_condition']) && $input['weather_condition'] !== '' ? trim($input['weather_condition']) : null;
+        $temperature = isset($input['temperature']) && $input['temperature'] !== '' ? (float)$input['temperature'] : null;
+        $visibility = isset($input['visibility']) && $input['visibility'] !== '' ? (float)$input['visibility'] : null;
+        $crossing = isset($input['crossing']) && $input['crossing'] !== '' ? filter_var($input['crossing'], FILTER_VALIDATE_BOOLEAN) : null;
+        $junction = isset($input['junction']) && $input['junction'] !== '' ? filter_var($input['junction'], FILTER_VALIDATE_BOOLEAN) : null;
+        $trafficSignal = isset($input['traffic_signal']) && $input['traffic_signal'] !== '' ? filter_var($input['traffic_signal'], FILTER_VALIDATE_BOOLEAN) : null;
+        $sunriseSunset = isset($input['sunrise_sunset']) && $input['sunrise_sunset'] !== '' ? trim($input['sunrise_sunset']) : null;
 
         if (empty($dateTime) || $severity === null || $lat === null || $lng === null) {
             (new ErrorResponder())->send(400, 'Missing required fields: date_time, severity, latitude, longitude');
@@ -49,7 +59,16 @@ class PostAccidentAction implements Action
                 (int) $severity,
                 (float) $lat,
                 (float) $lng,
-                $state !== '' ? strtoupper($state) : null
+                $state !== '' ? strtoupper($state) : null,
+                $city,
+                $county,
+                $weatherCondition,
+                $temperature,
+                $visibility,
+                $crossing,
+                $junction,
+                $trafficSignal,
+                $sunriseSunset
             );
         } catch (PDOException $e) {
             (new ErrorResponder())->send(500, 'Database error: ' . $e->getMessage());

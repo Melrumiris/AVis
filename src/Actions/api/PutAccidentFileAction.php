@@ -76,7 +76,7 @@ class PutAccidentFileAction implements Action
         fgetcsv($handle);
 
         $rows = [];
-        while (($row = fgetcsv($handle, 1000, ',')) !== false) {
+        while (($row = fgetcsv($handle)) !== false) {
             $rows[] = $row;
         }
         fclose($handle);

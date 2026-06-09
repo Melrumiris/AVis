@@ -65,6 +65,68 @@
                            placeholder="e.g. CA" style="text-transform:uppercase;">
                 </div>
 
+                <details style="margin-bottom: var(--spacing-lg); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: var(--spacing-sm);">
+                    <summary style="cursor: pointer; font-weight: 600; color: var(--text-main);">Optional Details</summary>
+                    <div style="margin-top: var(--spacing-md);">
+                        <div class="form-group">
+                            <label for="m-city" class="form-label">City</label>
+                            <input type="text" id="m-city" name="city" class="form-control" placeholder="e.g. Los Angeles">
+                        </div>
+                        <div class="form-group">
+                            <label for="m-county" class="form-label">County</label>
+                            <input type="text" id="m-county" name="county" class="form-control" placeholder="e.g. Los Angeles">
+                        </div>
+                        <div class="form-group">
+                            <label for="m-weather" class="form-label">Weather Condition</label>
+                            <input type="text" id="m-weather" name="weather_condition" class="form-control" placeholder="e.g. Clear">
+                        </div>
+                        <div style="display: flex; gap: var(--spacing-sm);">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="m-temp" class="form-label">Temperature (°F)</label>
+                                <input type="number" step="any" id="m-temp" name="temperature" class="form-control" placeholder="e.g. 75.5">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="m-visibility" class="form-label">Visibility (mi)</label>
+                                <input type="number" step="any" id="m-visibility" name="visibility" class="form-control" placeholder="e.g. 10.0">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: var(--spacing-sm);">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="m-crossing" class="form-label">Crossing</label>
+                                <select id="m-crossing" name="crossing" class="form-control">
+                                    <option value="">—</option>
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="m-junction" class="form-label">Junction</label>
+                                <select id="m-junction" name="junction" class="form-control">
+                                    <option value="">—</option>
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="m-signal" class="form-label">Traffic Signal</label>
+                                <select id="m-signal" name="traffic_signal" class="form-control">
+                                    <option value="">—</option>
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="m-daynight" class="form-label">Day/Night</label>
+                            <select id="m-daynight" name="sunrise_sunset" class="form-control">
+                                <option value="">—</option>
+                                <option value="Day">Day</option>
+                                <option value="Night">Night</option>
+                            </select>
+                        </div>
+                    </div>
+                </details>
+
                 <button type="submit" id="btn-submit-manual" class="btn btn-primary">
                     Add Accident
                 </button>
@@ -79,7 +141,7 @@
             <form id="form-csv-accident" novalidate>
                 <p class="form-hint">
                     Accepted format (header row + data rows):<br>
-                    <code>Date_Time, Severity, Latitude, Longitude, State</code>
+                    <code>Date_Time, Severity, Latitude, Longitude, State, City, County, Weather_Condition, Temperature, Visibility, Crossing, Junction, Traffic_Signal, Sunrise_Sunset</code>
                 </p>
 
                 <div class="form-group">

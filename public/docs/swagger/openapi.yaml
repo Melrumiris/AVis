@@ -1,0 +1,981 @@
+openapi: 3.0.3
+info:
+  title: AVis API
+  description: Technical API documentation for the AVis (USA Accidents Visualizer) project. This documentation details the internal REST API powering the vanilla Javascript frontend, utilizing an Action-Domain-Responder architecture and stateless JWT authentication.
+  version: 1.0.0
+servers:
+  - url: /
+    description: Current server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "Detailed error message describing the failure."
+  responses:
+    BadRequest:
+      description: Bad Request - Missing or invalid parameters.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Missing required fields or invalid data format."
+    Unauthorized:
+      description: Unauthorized - Missing or invalid JWT token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Authentication required"
+    NotFound:
+      description: Not Found - Resource or endpoint does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Invalid endpoint"
+    InternalServerError:
+      description: Internal Server Error - Typically a database connection or execution failure.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Database error: SQLSTATE[HY000] ..."
+security:
+  - bearerAuth: []
+paths:
+  /api/v0/auth/login:
+    post:
+      summary: Authenticate User
+      description: >
+        Validates user credentials against the database. On success, this endpoint returns a short-lived Access Token
+        (in the JSON payload) and sets a long-lived HTTP-only, Secure cookie containing the Refresh Token. This dual-token
+        architecture ensures robust authentication while mitigating XSS and CSRF risks without relying on PHP sessions.
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: admin@avis.com
+                password:
+                  type: string
+                  example: password123
+      responses:
+        '201':
+          description: Successful login, returns Access Token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Logged in successfully
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          headers:
+            Set-Cookie:
+              description: Refresh token cookie (HttpOnly, Secure, SameSite=Strict)
+              schema:
+                type: string
+        '400':
+          description: Invalid credentials or missing fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: "Invalid username or password"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v0/auth/register:
+    post:
+      summary: Register New User
+      description: >
+        Creates a new user account in the PostgreSQL database. Passwords are securely hashed using PHP's native password_hash
+        function before storage.
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  example: john@example.com
+                password:
+                  type: string
+                  example: mysecretpassword
+      responses:
+        '201':
+          description: Successfully registered.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Registration successful
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v0/auth/refresh:
+    get:
+      summary: Refresh Access Token
+      description: >
+        Reads the long-lived HTTP-only Refresh Token from the request cookies. If valid, issues a new short-lived Access Token.
+        This endpoint is required because the Access Token is held in volatile JavaScript memory and expires quickly.
+      tags: [Auth]
+      security: []
+      responses:
+        '200':
+          description: New Access Token generated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Access token retrieved
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '401':
+          description: Invalid or missing refresh token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: "Invalid or missing refresh token"
+  /api/v0/auth/logout:
+    delete:
+      summary: Logout User
+      description: >
+        Terminates the user's session by clearing the Refresh Token cookie. Instructs the browser to invalidate the HTTP-only cookie.
+      tags: [Auth]
+      security: []
+      responses:
+        '200':
+          description: Successfully logged out, cookie cleared.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Logged out successfully
+  /api/v0/profile:
+    get:
+      summary: Get Current User Profile
+      description: >
+        Fetches the authenticated user's profile information (ID, Name, Email, Role) based on the "sub" claim inside the
+        provided JWT Bearer token.
+      tags: [Profile]
+      responses:
+        '200':
+          description: User profile retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: U-1234abcd
+                      name:
+                        type: string
+                        example: Admin User
+                      email:
+                        type: string
+                        example: admin@avis.com
+                      role:
+                        type: string
+                        example: admin
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: User not found in database.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: "User not found"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      summary: Update User Profile
+      description: >
+        Updates the authenticated user's profile details. Allows modification of name, email, and password. Only fields
+        provided in the payload will be updated. Passwords will be re-hashed prior to updating the database.
+      tags: [Profile]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: New Name
+                email:
+                  type: string
+                  example: newemail@example.com
+                password:
+                  type: string
+                  example: newpassword123
+      responses:
+        '200':
+          description: User updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Profile updated successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v0/accidents/ask:
+    post:
+      summary: Experimental AI-Driven SQL Generation (NLP)
+      description: >
+        **EXPERIMENTAL API**: This endpoint strictly utilizes the IETF Draft `QUERY` HTTP method. Standard POST requests will fail.
+        Converts a natural language prompt into an executed PostgreSQL SELECT statement using Gemini AI, filtered by the authenticated user's context.
+      tags: [Data]
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: "Show me severe accidents in California during rain"
+      responses:
+        '200':
+          description: Executed SQL query and its results.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  query:
+                    type: string
+                    example: "SELECT * FROM accidents WHERE state = 'CA' AND weather_condition ILIKE '%rain%' AND severity >= 3"
+                  data:
+                    type: array
+                    items:
+                      type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v0/statistics:
+    get:
+      summary: Get Accident Statistics
+      description: >
+        Aggregates accident records dynamically based on provided query filters. The "group_by" parameter dictates the
+        aggregation strategy (e.g., counting accidents by severity, year, month, or weather conditions). This is heavily
+        utilized by the Chart.js frontend dashboard. Bypasses JWT auth to allow public exploration.
+      tags: [Data]
+      security: []
+      parameters:
+        - in: query
+          name: group_by
+          schema:
+            type: string
+            enum: [severity, year, month, day, location, city, county, weather_condition, sunrise_sunset]
+            default: severity
+          description: Field to group statistics by (e.g. aggregating counts per month or per severity level).
+        - in: query
+          name: sdate
+          schema:
+            type: string
+            format: date
+          example: 2020-01-01
+        - in: query
+          name: fdate
+          schema:
+            type: string
+            format: date
+          example: 2020-12-31
+        - in: query
+          name: severity
+          schema:
+            type: string
+          example: "2"
+        - in: query
+          name: region
+          schema:
+            type: string
+            enum: [ALL, NE, NW, SE, SW]
+          description: Geographic bounding box filter.
+        - in: query
+          name: city
+          schema:
+            type: string
+          example: Los Angeles
+        - in: query
+          name: county
+          schema:
+            type: string
+          example: Los Angeles
+        - in: query
+          name: weather_condition
+          schema:
+            type: string
+          example: Clear
+        - in: query
+          name: temperature
+          schema:
+            type: number
+          example: 75.5
+        - in: query
+          name: visibility
+          schema:
+            type: number
+          example: 10.0
+        - in: query
+          name: crossing
+          schema:
+            type: boolean
+          example: true
+        - in: query
+          name: junction
+          schema:
+            type: boolean
+          example: false
+        - in: query
+          name: traffic_signal
+          schema:
+            type: boolean
+          example: true
+        - in: query
+          name: sunrise_sunset
+          schema:
+            type: string
+            enum: [Day, Night]
+      responses:
+        '200':
+          description: Aggregated statistics retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        label:
+                          type: string
+                          example: "2"
+                        total:
+                          type: integer
+                          example: 15432
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v0/map:
+    get:
+      summary: Get Map Coordinates
+      description: >
+        Fetches up to 1500 latitude and longitude coordinates of accidents matching the specified filters. Used by the
+        Leaflet.js frontend to render geographical heatmap markers without overloading the client's DOM. Bypasses JWT auth.
+      tags: [Data]
+      security: []
+      parameters:
+        - in: query
+          name: sdate
+          schema:
+            type: string
+            format: date
+          example: 2020-01-01
+        - in: query
+          name: fdate
+          schema:
+            type: string
+            format: date
+          example: 2020-12-31
+        - in: query
+          name: severity
+          schema:
+            type: string
+          example: "2"
+        - in: query
+          name: region
+          schema:
+            type: string
+            enum: [ALL, NE, NW, SE, SW]
+        - in: query
+          name: city
+          schema:
+            type: string
+          example: Los Angeles
+        - in: query
+          name: county
+          schema:
+            type: string
+          example: Los Angeles
+        - in: query
+          name: weather_condition
+          schema:
+            type: string
+          example: Clear
+        - in: query
+          name: temperature
+          schema:
+            type: number
+          example: 75.5
+        - in: query
+          name: visibility
+          schema:
+            type: number
+          example: 10.0
+        - in: query
+          name: crossing
+          schema:
+            type: boolean
+          example: true
+        - in: query
+          name: junction
+          schema:
+            type: boolean
+          example: false
+        - in: query
+          name: traffic_signal
+          schema:
+            type: boolean
+          example: true
+        - in: query
+          name: sunrise_sunset
+          schema:
+            type: string
+            enum: [Day, Night]
+      responses:
+        '200':
+          description: Coordinate list retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        lat:
+                          type: number
+                          example: 34.0522
+                        lng:
+                          type: number
+                          example: -118.2437
+                        severity:
+                          type: integer
+                          example: 2
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v0/report:
+    get:
+      summary: Get Tabular Accident Report
+      description: >
+        Retrieves a detailed list of up to 10,000 accident records based on the given filters. Provides comprehensive
+        data columns for tabular display on the frontend dashboard. Bypasses JWT auth.
+      tags: [Data]
+      security: []
+      parameters:
+        - in: query
+          name: sdate
+          schema:
+            type: string
+            format: date
+          example: 2020-01-01
+        - in: query
+          name: fdate
+          schema:
+            type: string
+            format: date
+          example: 2020-12-31
+        - in: query
+          name: severity
+          schema:
+            type: string
+          example: "3"
+        - in: query
+          name: region
+          schema:
+            type: string
+            enum: [ALL, NE, NW, SE, SW]
+        - in: query
+          name: city
+          schema:
+            type: string
+        - in: query
+          name: county
+          schema:
+            type: string
+        - in: query
+          name: weather_condition
+          schema:
+            type: string
+        - in: query
+          name: temperature
+          schema:
+            type: number
+        - in: query
+          name: visibility
+          schema:
+            type: number
+        - in: query
+          name: crossing
+          schema:
+            type: boolean
+        - in: query
+          name: junction
+          schema:
+            type: boolean
+        - in: query
+          name: traffic_signal
+          schema:
+            type: boolean
+        - in: query
+          name: sunrise_sunset
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tabular accident data retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date_time:
+                          type: string
+                          example: 2020-01-01 12:34:56
+                        severity:
+                          type: integer
+                          example: 3
+                        latitude:
+                          type: number
+                          example: 34.0522
+                        longitude:
+                          type: number
+                          example: -118.2437
+                        state:
+                          type: string
+                          example: CA
+                        city:
+                          type: string
+                          example: Los Angeles
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v0/report/file:
+    get:
+      summary: Download Accident Report File
+      description: >
+        Generates and returns a downloadable file containing the filtered accident data. The file format can be either
+        CSV or JSON. Since this endpoint is triggered via `window.location.href` to force a browser download, it uses
+        cookie-based JWT authentication instead of the Authorization header.
+      tags: [Data]
+      security: []
+      parameters:
+        - in: query
+          name: format
+          schema:
+            type: string
+            enum: [csv, json]
+            default: csv
+          required: true
+          example: csv
+        - in: query
+          name: sdate
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: fdate
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: severity
+          schema:
+            type: string
+        - in: query
+          name: region
+          schema:
+            type: string
+            enum: [ALL, NE, NW, SE, SW]
+        - in: query
+          name: city
+          schema:
+            type: string
+        - in: query
+          name: county
+          schema:
+            type: string
+        - in: query
+          name: weather_condition
+          schema:
+            type: string
+        - in: query
+          name: temperature
+          schema:
+            type: number
+        - in: query
+          name: visibility
+          schema:
+            type: number
+        - in: query
+          name: crossing
+          schema:
+            type: boolean
+        - in: query
+          name: junction
+          schema:
+            type: boolean
+        - in: query
+          name: traffic_signal
+          schema:
+            type: boolean
+        - in: query
+          name: sunrise_sunset
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A downloadable file (CSV or JSON).
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+            application/json:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v0/admin/accident:
+    post:
+      summary: Add Single Accident Record
+      description: >
+        Inserts a single new accident record into the database. Requires Administrator privileges.
+        The backend performs strict validation on coordinates, severity limits, and US state abbreviations.
+      tags: [Admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date_time:
+                  type: string
+                  example: "2023-10-25 14:30:00"
+                severity:
+                  type: integer
+                  example: 2
+                latitude:
+                  type: number
+                  example: 34.0522
+                longitude:
+                  type: number
+                  example: -118.2437
+                state:
+                  type: string
+                  example: "CA"
+                city:
+                  type: string
+                  example: "Los Angeles"
+                county:
+                  type: string
+                  example: "Los Angeles"
+                weather_condition:
+                  type: string
+                  example: "Clear"
+                temperature:
+                  type: number
+                  example: 75.5
+                visibility:
+                  type: number
+                  example: 10.0
+                crossing:
+                  type: boolean
+                  example: false
+                junction:
+                  type: boolean
+                  example: true
+                traffic_signal:
+                  type: boolean
+                  example: true
+                sunrise_sunset:
+                  type: string
+                  example: "Day"
+      responses:
+        '201':
+          description: Accident record created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      inserted:
+                        type: integer
+                        example: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v0/admin/accident/file:
+    post:
+      summary: Upload Accidents Bulk CSV
+      description: >
+        Handles the bulk ingestion of accident records via a CSV file upload. Parses the CSV and uses PostgreSQL
+        transactions to atomically insert thousands of rows, ensuring data integrity. Restricted to Administrators.
+        Limits file size to 50 MB.
+      tags: [Admin]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                csv_file:
+                  type: string
+                  format: binary
+                  description: Max 50MB, .csv file format containing tabular accident data.
+      responses:
+        '201':
+          description: CSV successfully parsed and rows inserted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      inserted:
+                        type: integer
+                        example: 5432
+        '400':
+          description: Bad Request - Missing file, empty CSV, or parsing error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: "File upload error code: 4"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          description: Payload Too Large - File exceeds 50 MB.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: "File exceeds maximum allowed size of 50 MB"
+        '415':
+          description: Unsupported Media Type - Invalid extension.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: "Only .csv files are accepted"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /api/v0/admin/accident/file/{start_time}/{end_time}:
+    put:
+      summary: Replace Accidents via CSV in Time Range
+      description: >
+        Atomically replaces all existing accident records within the provided {start_time} and {end_time} boundary with
+        the rows found in the uploaded CSV file. Executed entirely within a single database transaction. Restricted to
+        Administrators.
+      tags: [Admin]
+      parameters:
+        - in: path
+          name: start_time
+          required: true
+          schema:
+            type: string
+          example: 2020-01-01 00:00:00
+          description: The starting timestamp bound (YYYY-MM-DD HH:MM:SS)
+        - in: path
+          name: end_time
+          required: true
+          schema:
+            type: string
+          example: 2020-01-31 23:59:59
+          description: The ending timestamp bound (YYYY-MM-DD HH:MM:SS)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                csv_file:
+                  type: string
+                  format: binary
+                  description: Max 50MB, .csv file format containing the replacement tabular accident data.
+      responses:
+        '201':
+          description: Old records deleted and new CSV successfully inserted within a transaction.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      inserted:
+                        type: integer
+                        example: 1200
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          description: Payload Too Large - File exceeds 50 MB.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: "File exceeds maximum allowed size of 50 MB"
+        '415':
+          description: Unsupported Media Type - Invalid extension.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                success: false
+                error: "Only .csv files are accepted"
+        '500':
+          $ref: '#/components/responses/InternalServerError'

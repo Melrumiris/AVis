@@ -25,15 +25,18 @@ class PatchProfileAction implements Action
         }
 
         // Validate what's present — at least one field required
-        $hasUsername = array_key_exists('username', $input);
-        $hasBio      = array_key_exists('bio', $input);
+        $hasUsername   = array_key_exists('username', $input);
+        $hasBio        = array_key_exists('bio', $input);
+        $hasProfilePic = array_key_exists('profile_pic', $input);
+        $hasUserLat    = array_key_exists('user_lat', $input);
+        $hasUserLng    = array_key_exists('user_lng', $input);
 
-        if (!$hasUsername && !$hasBio) {
+        if (!$hasUsername && !$hasBio && !$hasProfilePic && !$hasUserLat && !$hasUserLng) {
             (new ErrorResponder())->send(400, 'No updatable fields provided');
         }
 
         if ($hasUsername) {
-            $username = trim($input['username']);
+            $username = trim((string)$input['username']);
             if ($username === '') {
                 (new ErrorResponder())->send(400, 'Username cannot be empty');
             }
@@ -42,12 +45,19 @@ class PatchProfileAction implements Action
             }
         }
 
+        if ($hasProfilePic && $input['profile_pic'] !== null && strlen((string)$input['profile_pic']) > 500) {
+            (new ErrorResponder())->send(400, 'Profile picture URL cannot exceed 500 characters');
+        }
+
         try {
             $userDomain = new UserDomain();
             $success = $userDomain->updateProfilePartial(
                 $payload->sub,
-                $hasUsername ? trim($input['username']) : null,
-                $hasBio      ? trim($input['bio'])      : null
+                $hasUsername   ? trim((string)$input['username']) : null,
+                $hasBio        ? trim((string)$input['bio'])      : null,
+                $hasProfilePic ? ($input['profile_pic'] !== null ? trim((string)$input['profile_pic']) : '') : null,
+                $hasUserLat    ? ($input['user_lat'] !== null ? (float)$input['user_lat'] : 0.0) : null,
+                $hasUserLng    ? ($input['user_lng'] !== null ? (float)$input['user_lng'] : 0.0) : null
             );
         } catch (PDOException $e) {
             (new ErrorResponder())->send(500, 'Database error: ' . $e->getMessage());

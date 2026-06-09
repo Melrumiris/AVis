@@ -6,6 +6,7 @@
  */
 ?>
 
+<link rel="alternate" type="application/rss+xml" title="AVis Recent Accidents Feed" href="/rss">
 <section id="about-page" class="page-section" style="max-width: 800px; margin: 0 auto; text-align: center;">
     <h1 class="page-title" style="font-size: 3rem; margin-bottom: 1rem;">Welcome to AVis</h1>
     <h2 style="color: var(--text-muted); font-weight: 400; margin-bottom: 2rem;">Accident Visualizer Dashboard</h2>

@@ -244,3 +244,59 @@
     background-color: var(--color-primary);
     color: var(--text-inverse);
 }
+
+/* =============================================================
+   RESPONSIVE — Mobile Component Overrides (≤ 768px)
+   ============================================================= */
+@media screen and (max-width: 768px) {
+    /* Island card: use responsive padding/radius vars */
+    .island-card {
+        padding: var(--island-padding);
+        border-radius: var(--island-radius);
+    }
+
+    /* Buttons: touch-friendly minimum sizing */
+    .btn {
+        min-height: var(--touch-target-min);
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Form inputs: touch-friendly */
+    .form-control {
+        min-height: var(--touch-target-min);
+        font-size: 1rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    /* Table cells: tighter on mobile */
+    .data-table th,
+    .data-table td {
+        padding: var(--spacing-sm);
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    /* Profile pic — slightly smaller */
+    .profile-pic {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    /* Upload mode toggle — full width on mobile */
+    .upload-mode-toggle {
+        width: 100%;
+    }
+
+    .upload-mode-toggle label {
+        flex: 1;
+        text-align: center;
+        padding: 0.5rem 0.75rem;
+        min-height: var(--touch-target-min);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+

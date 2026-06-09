@@ -18,12 +18,15 @@ CREATE TYPE user_role AS ENUM ('user', 'admin');
 DROP TABLE IF EXISTS users CASCADE;
 
 CREATE TABLE users (
-    id         UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
-    username   VARCHAR(100) NOT NULL,
-    email      VARCHAR(255) NOT NULL UNIQUE,
-    password   VARCHAR(255) NOT NULL,
-    role       user_role    NOT NULL DEFAULT 'user',
-    bio        TEXT         NOT NULL DEFAULT ''
+    id          UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
+    username    VARCHAR(100) NOT NULL,
+    email       VARCHAR(255) NOT NULL UNIQUE,
+    password    VARCHAR(255) NOT NULL,
+    role        user_role    NOT NULL DEFAULT 'user',
+    bio         TEXT         NOT NULL DEFAULT '',
+    profile_pic VARCHAR(500),
+    user_lat    FLOAT,
+    user_lng    FLOAT
 );
 
 -- Index for login lookups
@@ -40,7 +43,16 @@ CREATE TABLE accidents (
     severity    SMALLINT       NOT NULL CHECK (severity BETWEEN 1 AND 4),
     latitude    NUMERIC(10,6),
     longitude   NUMERIC(10,6),
-    state       VARCHAR(2)
+    state       VARCHAR(2),
+    city        VARCHAR(100),
+    county      VARCHAR(100),
+    weather_condition VARCHAR(100),
+    temperature NUMERIC(5,2),
+    visibility  NUMERIC(5,2),
+    crossing    BOOLEAN,
+    junction    BOOLEAN,
+    traffic_signal BOOLEAN,
+    sunrise_sunset VARCHAR(10)
 );
 
 -- B-Tree indexes to prevent query timeouts on 7.7M rows

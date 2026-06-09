@@ -4,6 +4,7 @@
  *
  * Dynamic navbar: shows different links based on authentication state.
  * Reads $_COOKIE['token'] to determine auth status and role.
+ * Includes hamburger menu toggle for mobile responsiveness.
  */
 
 $isAuthenticated = false;
@@ -29,22 +30,14 @@ if (!empty($navToken)) {
 
 <nav id="main-navbar" class="navbar">
     <a href="/" class="navbar-brand">AVis</a>
-    <div class="nav-right-actions">
-        <ul class="navbar-links">
-            <?php if ($isAuthenticated): ?>
-                <li><a href="/about" class="nav-link">About</a></li>
-                <li><a href="/home" class="nav-link">Home</a></li>
-                <?php if ($userRole === 'admin'): ?>
-                    <li><a href="/admin" class="nav-link">Admin</a></li>
-                <?php endif; ?>
-                <li><a href="#" id="btn-logout" class="nav-link" onclick="return false;" style="color: var(--color-error);">Logout</a></li>
-            <?php else: ?>
-                <li><a href="/about" class="nav-link">About</a></li>
-                <li><a href="/login" class="nav-link">Login</a></li>
-                <li><a href="/register" class="btn btn-primary">Register</a></li>
-            <?php endif; ?>
-        </ul>
-        
+
+    <!-- Hamburger toggle — visible only on mobile via CSS -->
+    <button id="navbar-hamburger-btn" class="navbar-hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span class="hamburger-icon">☰</span>
+    </button>
+
+    <!-- Persistent actions: theme toggle + profile — always visible -->
+    <div class="nav-persistent-actions">
         <button id="theme-toggle-btn" class="theme-toggle" aria-label="Toggle theme">
             <script>
                 document.write(document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙');
@@ -57,7 +50,49 @@ if (!empty($navToken)) {
             </a>
         <?php endif; ?>
     </div>
+
+    <!-- Collapsible nav links — full-width dropdown on mobile -->
+    <ul id="navbar-links" class="navbar-links">
+        <?php if ($isAuthenticated): ?>
+            <li><a href="/about" class="nav-link">About</a></li>
+            <li><a href="/home" class="nav-link">Home</a></li>
+            <?php if ($userRole === 'admin'): ?>
+                <li><a href="/admin" class="nav-link">Admin</a></li>
+            <?php endif; ?>
+            <li><a href="#" id="btn-logout" class="nav-link" onclick="return false;" style="color: var(--color-error);">Logout</a></li>
+        <?php else: ?>
+            <li><a href="/about" class="nav-link">About</a></li>
+            <li><a href="/login" class="nav-link">Login</a></li>
+            <li><a href="/register" class="btn btn-primary">Register</a></li>
+        <?php endif; ?>
+    </ul>
 </nav>
+
+<!-- Hamburger Menu Toggle Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var hamburgerBtn = document.getElementById('navbar-hamburger-btn');
+    var navLinks = document.getElementById('navbar-links');
+
+    if (hamburgerBtn && navLinks) {
+        hamburgerBtn.addEventListener('click', function() {
+            var isActive = navLinks.classList.toggle('active');
+            hamburgerBtn.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+            // Swap icon: ☰ for open, ✕ for close
+            hamburgerBtn.querySelector('.hamburger-icon').textContent = isActive ? '✕' : '☰';
+        });
+
+        // Close menu when a nav link is tapped (mobile UX)
+        navLinks.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                navLinks.classList.remove('active');
+                hamburgerBtn.setAttribute('aria-expanded', 'false');
+                hamburgerBtn.querySelector('.hamburger-icon').textContent = '☰';
+            });
+        });
+    }
+});
+</script>
 
 <?php if ($isAuthenticated): ?>
 <script>

@@ -33,6 +33,12 @@ try {
     $router->addRoute('GET', '/api/v0/profile', new GetProfileAction());
     $router->addRoute('PATCH', '/api/v0/profile', new PatchProfileAction());
 
+    // --- API: RSS ---
+    $router->addRoute('GET', '/rss', new GetRssAction());
+
+    // --- API: NLP ---
+    $router->addRoute('QUERY', '/api/v0/accidents/ask', new QueryNlpAction());
+
     // --- Pages ---
     $router->addRoute('GET', '/', new ViewIndexAction());
     $router->addRoute('GET', '/about', new ViewAboutAction());

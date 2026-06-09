@@ -66,12 +66,12 @@ class UserDomain
     /**
      * Fetches the user profile by ID.
      *
-     * @return array{id: string, username: string, email: string, role: string, bio: string}|false
+     * @return array{id: string, username: string, email: string, role: string, bio: string, profile_pic: ?string, user_lat: ?float, user_lng: ?float}|false
      */
     public function getProfile(string $userId): array|false
     {
         $stmt = $this->db->prepare(
-            "SELECT id, username, email, role, bio FROM users WHERE id = :id"
+            "SELECT id, username, email, role, bio, profile_pic, user_lat, user_lng FROM users WHERE id = :id"
         );
         $stmt->execute([':id' => $userId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -97,10 +97,15 @@ class UserDomain
 
     /**
      * Partially updates the user profile — only writes non-null fields.
-     * At least one of $username / $bio must be non-null.
      */
-    public function updateProfilePartial(string $userId, ?string $username, ?string $bio): bool
-    {
+    public function updateProfilePartial(
+        string $userId,
+        ?string $username,
+        ?string $bio,
+        ?string $profilePic = null,
+        ?float $userLat = null,
+        ?float $userLng = null
+    ): bool {
         $sets   = [];
         $params = [':id' => $userId];
 
@@ -111,6 +116,18 @@ class UserDomain
         if ($bio !== null) {
             $sets[]          = 'bio = :bio';
             $params[':bio']  = $bio;
+        }
+        if ($profilePic !== null) {
+            $sets[]                 = 'profile_pic = :profile_pic';
+            $params[':profile_pic'] = $profilePic;
+        }
+        if ($userLat !== null) {
+            $sets[]              = 'user_lat = :user_lat';
+            $params[':user_lat'] = $userLat;
+        }
+        if ($userLng !== null) {
+            $sets[]              = 'user_lng = :user_lng';
+            $params[':user_lng'] = $userLng;
         }
 
         if (empty($sets)) {

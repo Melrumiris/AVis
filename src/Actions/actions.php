@@ -26,6 +26,12 @@ require ROOT . '/src/Actions/api/PutAccidentFileAction.php';
 require ROOT . '/src/Actions/api/GetProfileAction.php';
 require ROOT . '/src/Actions/api/PatchProfileAction.php';
 
+// --- API: RSS ---
+require ROOT . '/src/Actions/api/GetRssAction.php';
+
+// --- API: NLP ---
+require ROOT . '/src/Actions/api/QueryNlpAction.php';
+
 // --- Page: Auth ---
 require ROOT . '/src/Actions/page/ViewLoginAction.php';
 require ROOT . '/src/Actions/page/ViewRegisterAction.php';

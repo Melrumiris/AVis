@@ -108,6 +108,15 @@ $colMap = [
     'start_lat' => array_search('Start_Lat', $header),
     'start_lng' => array_search('Start_Lng', $header),
     'state'     => array_search('State', $header),
+    'city'      => array_search('City', $header),
+    'county'    => array_search('County', $header),
+    'weather_condition' => array_search('Weather_Condition', $header),
+    'temperature' => array_search('Temperature(F)', $header),
+    'visibility'  => array_search('Visibility(mi)', $header),
+    'crossing'    => array_search('Crossing', $header),
+    'junction'    => array_search('Junction', $header),
+    'traffic_signal' => array_search('Traffic_Signal', $header),
+    'sunrise_sunset' => array_search('Sunrise_Sunset', $header),
 ];
 
 // Validate required columns exist
@@ -147,6 +156,15 @@ while (($row = fgetcsv($handle, 4096, ',')) !== false) {
     $lat      = $row[$colMap['start_lat']] ?? '';
     $lng      = $row[$colMap['start_lng']] ?? '';
     $state    = ($colMap['state'] !== false) ? ($row[$colMap['state']] ?? '') : '';
+    $city     = ($colMap['city'] !== false) ? ($row[$colMap['city']] ?? '') : '';
+    $county   = ($colMap['county'] !== false) ? ($row[$colMap['county']] ?? '') : '';
+    $weather_condition = ($colMap['weather_condition'] !== false) ? ($row[$colMap['weather_condition']] ?? '') : '';
+    $temperature = ($colMap['temperature'] !== false) ? ($row[$colMap['temperature']] ?? '') : '';
+    $visibility  = ($colMap['visibility'] !== false) ? ($row[$colMap['visibility']] ?? '') : '';
+    $crossing    = ($colMap['crossing'] !== false) ? ($row[$colMap['crossing']] ?? '') : '';
+    $junction    = ($colMap['junction'] !== false) ? ($row[$colMap['junction']] ?? '') : '';
+    $traffic_signal = ($colMap['traffic_signal'] !== false) ? ($row[$colMap['traffic_signal']] ?? '') : '';
+    $sunrise_sunset = ($colMap['sunrise_sunset'] !== false) ? ($row[$colMap['sunrise_sunset']] ?? '') : '';
 
     // Skip invalid rows
     if (empty($id) || empty($severity) || empty($time) || empty($lat) || empty($lng)) {
@@ -167,11 +185,23 @@ while (($row = fgetcsv($handle, 4096, ',')) !== false) {
     // Truncate state to 2 chars
     $state = substr(trim($state), 0, 2);
     if ($state === '') {
-        $state = '\\N'; // PostgreSQL NULL
+        $state = 'NULL';
     }
 
+    $city = trim($city) === '' ? 'NULL' : trim($city);
+    $county = trim($county) === '' ? 'NULL' : trim($county);
+    $weather_condition = trim($weather_condition) === '' ? 'NULL' : trim($weather_condition);
+    $temperature = trim($temperature) === '' ? 'NULL' : (float)$temperature;
+    $visibility = trim($visibility) === '' ? 'NULL' : (float)$visibility;
+    
+    $crossing = strtolower(trim($crossing)) === 'true' ? 't' : (strtolower(trim($crossing)) === 'false' ? 'f' : 'NULL');
+    $junction = strtolower(trim($junction)) === 'true' ? 't' : (strtolower(trim($junction)) === 'false' ? 'f' : 'NULL');
+    $traffic_signal = strtolower(trim($traffic_signal)) === 'true' ? 't' : (strtolower(trim($traffic_signal)) === 'false' ? 'f' : 'NULL');
+    
+    $sunrise_sunset = trim($sunrise_sunset) === '' ? 'NULL' : trim($sunrise_sunset);
+
     // Write tab-separated line for COPY
-    fwrite($tmpHandle, "{$id}\t{$time}\t{$sevInt}\t{$lat}\t{$lng}\t{$state}\n");
+    fwrite($tmpHandle, "{$id}\t{$time}\t{$sevInt}\t{$lat}\t{$lng}\t{$state}\t{$city}\t{$county}\t{$weather_condition}\t{$temperature}\t{$visibility}\t{$crossing}\t{$junction}\t{$traffic_signal}\t{$sunrise_sunset}\n");
 
     $lineCount++;
 
@@ -205,12 +235,12 @@ try {
     echo "  Existing data truncated.\n";
 
     // Use COPY FROM STDIN via pg_* functions if available, otherwise use \copy via shell
-    $copySQL = "COPY accidents (id, date_time, severity, latitude, longitude, state) FROM STDIN WITH (FORMAT text, NULL '\\N')";
+    $copySQL = "COPY accidents (id, date_time, severity, latitude, longitude, state, city, county, weather_condition, temperature, visibility, crossing, junction, traffic_signal, sunrise_sunset) FROM STDIN WITH (FORMAT text, NULL 'NULL')";
 
     // Try pgsqlCopyFromFile via PDO first (fast, native, works with PDO pgsql driver)
     if (method_exists($pdo, 'pgsqlCopyFromFile')) {
         echo "  Using native PDO pgsqlCopyFromFile...\n";
-        $result = $pdo->pgsqlCopyFromFile('accidents', $tmpFile, "\t", "\\N", "id, date_time, severity, latitude, longitude, state");
+        $result = $pdo->pgsqlCopyFromFile('accidents', $tmpFile, "\t", "NULL", "id, date_time, severity, latitude, longitude, state, city, county, weather_condition, temperature, visibility, crossing, junction, traffic_signal, sunrise_sunset");
         if ($result === false) {
             throw new \RuntimeException("PDO pgsqlCopyFromFile failed");
         }
@@ -241,7 +271,7 @@ try {
                     break;
                 }
 
-                $result = pg_copy_from($pgConn, 'accidents', $lines, "\t", "\\N");
+                $result = pg_copy_from($pgConn, 'accidents', $lines, "\t", "NULL");
                 if ($result === false) {
                     $error = pg_last_error($pgConn);
                     fwrite(STDERR, "  COPY error: {$error}\n");
@@ -266,8 +296,8 @@ try {
         $escapedFile = escapeshellarg($tmpFile);
 
         $cmd = "PGPASSWORD={$escapedPass} psql -h {$dbHost} -p {$dbPort} -U {$dbUser} -d {$dbName} "
-             . "-c \"\\COPY accidents (id, date_time, severity, latitude, longitude, state) "
-             . "FROM {$escapedFile} WITH (FORMAT text, NULL '\\N')\" 2>&1";
+             . "-c \"\\COPY accidents (id, date_time, severity, latitude, longitude, state, city, county, weather_condition, temperature, visibility, crossing, junction, traffic_signal, sunrise_sunset) "
+             . "FROM {$escapedFile} WITH (FORMAT text, NULL 'NULL')\" 2>&1";
 
         $output = shell_exec($cmd);
         echo "  psql output: {$output}\n";

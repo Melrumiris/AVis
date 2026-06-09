@@ -9,9 +9,13 @@ require_once ROOT . '/src/Responders/ErrorResponder.php';
 
 class GetStatisticsAction implements Action
 {
-    private const ALLOWED_GROUP_BY = ['severity', 'year', 'month', 'day', 'location'];
-    private const ALLOWED_SEVERITY = ['ALL', '1', '2', '3', '4'];
+    private const ALLOWED_GROUP_BY = ['severity', 'year', 'month', 'day', 'location', 'city', 'county', 'weather_condition', 'sunrise_sunset'];
     private const ALLOWED_REGION = ['ALL', 'NE', 'NW', 'SE', 'SW'];
+    private const ALLOWED_FILTERS = [
+        'sdate', 'fdate', 'severity', 'region', 'city', 'county', 
+        'weather_condition', 'temperature', 'visibility', 
+        'crossing', 'junction', 'traffic_signal', 'sunrise_sunset'
+    ];
 
     public function execute(?string $param): void
     {
@@ -21,22 +25,22 @@ class GetStatisticsAction implements Action
 
         $payload = (new JwtAuth())->authenticateApiRequest();
 
-        $sdate    = trim($_GET['sdate']    ?? '');
-        $fdate    = trim($_GET['fdate']    ?? '');
-        $severity = trim($_GET['severity'] ?? 'ALL');
-        $region   = trim($_GET['region']   ?? 'ALL');
-        $groupBy  = trim($_GET['group_by'] ?? 'severity');
+        $filters = [];
+        foreach (self::ALLOWED_FILTERS as $key) {
+            if (isset($_GET[$key]) && $_GET[$key] !== '') {
+                $filters[$key] = trim((string)$_GET[$key]);
+            }
+        }
 
-        if ($sdate !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $sdate)) {
+        $groupBy = trim((string)($_GET['group_by'] ?? 'severity'));
+
+        if (!empty($filters['sdate']) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $filters['sdate'])) {
             (new ErrorResponder())->send(400, 'Invalid sdate format. Expected YYYY-MM-DD');
         }
-        if ($fdate !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $fdate)) {
+        if (!empty($filters['fdate']) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $filters['fdate'])) {
             (new ErrorResponder())->send(400, 'Invalid fdate format. Expected YYYY-MM-DD');
         }
-        if (!in_array($severity, self::ALLOWED_SEVERITY, true)) {
-            (new ErrorResponder())->send(400, 'Invalid severity value');
-        }
-        if (!in_array($region, self::ALLOWED_REGION, true)) {
+        if (!empty($filters['region']) && !in_array($filters['region'], self::ALLOWED_REGION, true)) {
             (new ErrorResponder())->send(400, 'Invalid region value');
         }
         if (!in_array($groupBy, self::ALLOWED_GROUP_BY, true)) {
@@ -45,7 +49,7 @@ class GetStatisticsAction implements Action
 
         try {
             $domain  = new AccidentDomain();
-            $results = $domain->getStatistics($sdate, $fdate, $severity, $region, $groupBy);
+            $results = $domain->getStatistics($filters, $groupBy);
         } catch (PDOException $e) {
             (new ErrorResponder())->send(500, 'Database error: ' . $e->getMessage());
         }
